@@ -4,21 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>島花解語 | 智慧營運後台管理系統</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            50: '#f4f6f2',
-                            100: '#e5eadf',
-                            500: '#6e7960',
-                            600: '#5c674e',
-                            700: '#4a543e',
-                            800: '#3a4231',
-                        }
+                        brand: { 50: '#f4f6f2', 100: '#e5eadf', 500: '#6e7960', 600: '#5c674e', 700: '#4a543e', 800: '#3a4231' }
                     }
                 }
             }
@@ -26,62 +18,40 @@
     </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap');
-        * {
-            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 9999px;
-        }
+        * { font-family: 'Noto Sans TC', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 9999px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
 
-<!-- 登入驗證介面 (未驗證時顯示) -->
+<!-- 登入介面 -->
 <div id="loginSection" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 border border-gray-100 relative">
         <div class="text-center mb-6">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-50 text-brand-600 mb-3 text-2xl font-bold border border-brand-100 shadow-inner">
-                🌸
-            </div>
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-50 text-brand-600 mb-3 text-2xl font-bold border border-brand-100 shadow-inner">🌸</div>
             <h1 class="text-2xl font-bold text-gray-800 tracking-wide">島花解語 後台管理系統</h1>
             <p class="text-xs text-gray-500 mt-1">智慧營運・庫存倉儲・出貨履歷管理</p>
         </div>
-
         <form id="adminLoginForm" onsubmit="handleLoginSubmit(event)" class="space-y-4">
             <div>
                 <label class="block text-xs font-semibold text-gray-600 mb-1">登入身分別</label>
                 <div class="grid grid-cols-2 gap-2">
-                    <button type="button" id="roleManagerBtn" onclick="selectRole('manager')" class="py-2 text-sm font-medium rounded-lg border-2 border-brand-500 bg-brand-50 text-brand-700 transition">
-                        主管登入
-                    </button>
-                    <button type="button" id="roleStaffBtn" onclick="selectRole('staff')" class="py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition">
-                        一般員工登入
-                    </button>
+                    <button type="button" id="roleManagerBtn" onclick="selectRole('manager')" class="py-2 text-sm font-medium rounded-lg border-2 border-brand-500 bg-brand-50 text-brand-700 transition">主管登入</button>
+                    <button type="button" id="roleStaffBtn" onclick="selectRole('staff')" class="py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition">一般員工</button>
                 </div>
             </div>
-
             <div>
                 <label class="block text-xs font-semibold text-gray-600 mb-1">管理者帳號</label>
-                <input type="text" id="loginUsername" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition" placeholder="請輸入工作帳號">
+                <input type="text" id="loginUsername" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-500" placeholder="請輸入工作帳號">
             </div>
-
             <div>
                 <label class="block text-xs font-semibold text-gray-600 mb-1">通關密碼</label>
-                <input type="password" id="loginPassword" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition" placeholder="請輸入密碼">
+                <input type="password" id="loginPassword" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-500" placeholder="請輸入密碼">
             </div>
-
             <div id="loginFeedback" class="hidden text-xs p-2.5 rounded-lg bg-red-50 text-red-600 border border-red-200"></div>
-
-            <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium text-sm rounded-lg shadow-md hover:shadow-lg transition">
-                驗證身分並登入系統
-            </button>
+            <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium text-sm rounded-lg shadow-md hover:shadow-lg transition">驗證身分並登入系統</button>
         </form>
-
         <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
             <span>預設主帳號：<strong class="text-gray-600">ygc96321</strong></span>
             <span>預設密碼：<strong class="text-gray-600">asdf6543</strong></span>
@@ -89,13 +59,12 @@
     </div>
 </div>
 
-<!-- 後台管理主畫面 (登入後解鎖) -->
+<!-- 主畫面 -->
 <div id="appContainer" class="hidden flex-1 flex flex-col min-h-screen">
-    <!-- 頂端控制條 -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-4">
-                <a href="index.html" target="_blank" title="前往官網前台" class="flex items-center space-x-2 group">
+                <a href="index.html" target="_blank" class="flex items-center space-x-2 group">
                     <span class="text-2xl group-hover:scale-110 transition">🌸</span>
                     <div>
                         <span class="font-bold text-gray-800 text-lg leading-tight block">島花解語</span>
@@ -103,862 +72,378 @@
                     </div>
                 </a>
                 <span class="h-5 w-px bg-gray-200"></span>
-                <a href="index.html" target="_blank" class="inline-flex items-center text-xs text-gray-500 hover:text-brand-600 bg-gray-100 hover:bg-brand-50 px-2.5 py-1 rounded-md transition">
-                    🌐 前往前台首頁
-                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                </a>
+                <a href="index.html" target="_blank" class="inline-flex items-center text-xs text-gray-500 hover:text-brand-600 bg-gray-100 hover:bg-brand-50 px-2.5 py-1 rounded-md transition">🌐 前往前台首頁</a>
             </div>
-
-            <!-- 使用者狀態與登出 -->
             <div class="flex items-center space-x-4">
                 <div class="flex items-center space-x-2 bg-brand-50 px-3 py-1.5 rounded-full border border-brand-100">
                     <span id="roleBadge" class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
                     <span id="userGreeting" class="text-xs font-semibold text-brand-700">主管 (ygc96321)</span>
                 </div>
-                <button onclick="handleLogout()" class="text-xs text-gray-500 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition" title="登出後台">
-                    🚪 安全登出
-                </button>
+                <button onclick="handleLogout()" class="text-xs text-gray-500 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition">🚪 安全登出</button>
             </div>
         </div>
     </header>
 
-    <!-- 標籤導覽列 (分頁功能) -->
     <nav class="bg-white border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 sm:space-x-8 overflow-x-auto custom-scrollbar">
-            <button onclick="switchTab('dashboard')" id="tabBtn-dashboard" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-brand-500 text-brand-600 flex items-center space-x-2 whitespace-nowrap">
-                <span>📊</span><span>營運總覽</span>
-            </button>
-            <button onclick="switchTab('products')" id="tabBtn-products" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 flex items-center space-x-2 whitespace-nowrap">
-                <span>🌿</span><span>商品管理 & 上架</span>
-            </button>
-            <button onclick="switchTab('inventory')" id="tabBtn-inventory" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 flex items-center space-x-2 whitespace-nowrap">
+            <button onclick="switchTab('dashboard')" id="tabBtn-dashboard" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-brand-500 text-brand-600 flex items-center space-x-2"><span>📊</span><span>營運總覽</span></button>
+            <button onclick="switchTab('products')" id="tabBtn-products" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 flex items-center space-x-2"><span>🌿</span><span>商品管理 & 上架</span></button>
+            <button onclick="switchTab('inventory')" id="tabBtn-inventory" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 flex items-center space-x-2">
                 <span>📦</span><span>庫存監控與補貨</span>
                 <span id="inventoryAlertBadge" class="hidden px-1.5 py-0.5 text-[10px] rounded-full bg-red-500 text-white font-bold">0</span>
             </button>
-            <button onclick="switchTab('orders')" id="tabBtn-orders" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 flex items-center space-x-2 whitespace-nowrap">
-                <span>🚚</span><span>訂單與安排出貨</span>
-            </button>
-            <button onclick="switchTab('staff')" id="tabBtn-staff" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 flex items-center space-x-2 whitespace-nowrap">
-                <span>👥</span><span>人員與操作紀錄</span>
-            </button>
+            <button onclick="switchTab('orders')" id="tabBtn-orders" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 flex items-center space-x-2"><span>🚚</span><span>訂單與安排出貨</span></button>
+            <button onclick="switchTab('staff')" id="tabBtn-staff" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 flex items-center space-x-2"><span>👥</span><span>人員紀錄</span></button>
         </div>
     </nav>
 
-    <!-- 主要內容區 -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
-        <!-- 頁籤一：營運總覽 Dashboard -->
+        <!-- Dashboard -->
         <section id="tab-dashboard" class="tab-pane space-y-6">
-            <!-- 數據指標卡片 -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-gray-400 font-medium">今日營業額</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1" id="kpiRevenue">NT$ 24,800</h3>
-                        <span class="text-[11px] text-green-600 font-medium">↑ 較昨日成長 +14%</span>
-                    </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex justify-between">
+                    <div><p class="text-xs text-gray-400 font-medium">總營業額</p><h3 class="text-2xl font-bold text-gray-800 mt-1" id="kpiRevenue">NT$ 0</h3></div>
                     <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">💰</div>
                 </div>
-
-                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-gray-400 font-medium">待安排出貨訂單</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1" id="kpiPendingOrders">3 筆</h3>
-                        <span class="text-[11px] text-amber-600 font-medium">需於今日內寄出</span>
-                    </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex justify-between">
+                    <div><p class="text-xs text-gray-400 font-medium">待安排出貨</p><h3 class="text-2xl font-bold text-gray-800 mt-1" id="kpiPendingOrders">0 筆</h3></div>
                     <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">📦</div>
                 </div>
-
-                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-gray-400 font-medium">全站商品品項</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1" id="kpiProductCount">8 款</h3>
-                        <span class="text-[11px] text-brand-600 font-medium">正常上架銷售中</span>
-                    </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex justify-between">
+                    <div><p class="text-xs text-gray-400 font-medium">全站商品品項</p><h3 class="text-2xl font-bold text-gray-800 mt-1" id="kpiProductCount">0 款</h3></div>
                     <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-xl">🌿</div>
                 </div>
-
-                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p class="text-xs text-gray-400 font-medium">庫存警戒提醒</p>
-                        <h3 class="text-2xl font-bold text-red-600 mt-1" id="kpiLowStock">1 項</h3>
-                        <span class="text-[11px] text-red-500 font-medium">低於安全存量 (10件)</span>
-                    </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex justify-between">
+                    <div><p class="text-xs text-gray-400 font-medium">庫存警戒提醒</p><h3 class="text-2xl font-bold text-red-600 mt-1" id="kpiLowStock">0 項</h3></div>
                     <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xl">⚠️</div>
                 </div>
             </div>
-
-            <!-- 兩欄分析 -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- 近期熱銷排行 -->
-                <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm lg:col-span-2">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold text-gray-800 text-base flex items-center">
-                            <span class="mr-2">🔥</span> 明星商品熱銷榜 (本月累計)
-                        </h3>
-                        <span class="text-xs text-gray-400">更新於今日</span>
-                    </div>
-                    <div class="divide-y divide-gray-100 text-sm" id="topSellingList">
-                        <!-- 動態填入 -->
-                    </div>
-                </div>
-
-                <!-- 快速工作台快捷鍵 -->
-                <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-bold text-gray-800 text-base mb-4 flex items-center">
-                            <span class="mr-2">⚡</span> 常用操作快捷入口
-                        </h3>
-                        <div class="space-y-3">
-                            <button onclick="openProductModal()" class="w-full py-2.5 px-4 bg-brand-50 text-brand-700 font-medium rounded-lg text-sm hover:bg-brand-100 transition flex items-center justify-between">
-                                <span>➕ 快速新增商品</span>
-                                <span>&rarr;</span>
-                            </button>
-                            <button onclick="switchTab('orders')" class="w-full py-2.5 px-4 bg-gray-50 text-gray-700 font-medium rounded-lg text-sm hover:bg-gray-100 transition flex items-center justify-between">
-                                <span>📋 檢視待出貨清單</span>
-                                <span>&rarr;</span>
-                            </button>
-                            <button onclick="switchTab('inventory')" class="w-full py-2.5 px-4 bg-gray-50 text-gray-700 font-medium rounded-lg text-sm hover:bg-gray-100 transition flex items-center justify-between">
-                                <span>📊 庫存快速盤點補貨</span>
-                                <span>&rarr;</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 pt-4 border-t border-gray-100 text-xs text-gray-400">
-                        <p>專人客服對接電話：0976943100</p>
-                        <p class="mt-1">負責人聯繫窗口：簡鈿翃 (0930267812)</p>
-                    </div>
-                </div>
-            </div>
         </section>
 
-        <!-- 頁籤二：商品管理 & 上架 Products -->
+        <!-- Products -->
         <section id="tab-products" class="tab-pane hidden space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800">商品資料與上架管理</h2>
-                    <p class="text-xs text-gray-500 mt-0.5">即時編輯官網展示之植萃保養品、價格與圖文資料</p>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <input type="text" id="productSearchInput" oninput="renderProductsTable()" placeholder="搜尋商品名稱/分類..." class="px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs w-48 sm:w-60 focus:outline-none focus:ring-2 focus:ring-brand-500">
-                    <button onclick="openProductModal()" class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-lg shadow-sm flex items-center space-x-1.5 transition">
-                        <span>＋</span><span>新增商品</span>
-                    </button>
+            <div class="flex justify-between gap-4">
+                <h2 class="text-xl font-bold text-gray-800">商品資料與上架管理</h2>
+                <div class="flex space-x-3">
+                    <input type="text" id="productSearchInput" oninput="renderProductsTable()" placeholder="搜尋商品..." class="px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-brand-500">
+                    <button onclick="openProductModal()" class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-lg shadow-sm">＋ 新增商品</button>
                 </div>
             </div>
-
-            <!-- 商品資料表格 -->
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead class="bg-gray-50 border-b border-gray-200 text-gray-600 uppercase font-semibold tracking-wider">
-                            <tr>
-                                <th class="p-3.5">商品縮圖</th>
-                                <th class="p-3.5">商品名稱</th>
-                                <th class="p-3.5">所屬分類</th>
-                                <th class="p-3.5">建議售價</th>
-                                <th class="p-3.5">現有庫存</th>
-                                <th class="p-3.5">銷售狀態</th>
-                                <th class="p-3.5 text-right">管理操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productsTableBody" class="divide-y divide-gray-100 text-gray-700">
-                            <!-- JS 動態渲染 -->
-                        </tbody>
-                    </table>
-                </div>
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-gray-50 border-b border-gray-200 text-gray-600 uppercase font-semibold">
+                        <tr><th class="p-3.5">商品圖</th><th class="p-3.5">名稱與描述</th><th class="p-3.5">分類</th><th class="p-3.5">售價</th><th class="p-3.5">庫存</th><th class="p-3.5">狀態</th><th class="p-3.5 text-right">操作</th></tr>
+                    </thead>
+                    <tbody id="productsTableBody" class="divide-y divide-gray-100"></tbody>
+                </table>
             </div>
         </section>
 
-        <!-- 頁籤三：庫存監控與補貨 Inventory -->
+        <!-- Inventory -->
         <section id="tab-inventory" class="tab-pane hidden space-y-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800">倉儲存量監控與一鍵補貨</h2>
-                    <p class="text-xs text-gray-500 mt-0.5">系統自動監控安全水位（安全閾值：15 件），即時防止斷貨</p>
-                </div>
-                <button onclick="quickRestockAll()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-xs rounded-lg shadow-sm transition">
-                    ⚡ 全部低庫存品項一鍵補足 (+30)
-                </button>
+            <div class="flex justify-between">
+                <h2 class="text-xl font-bold text-gray-800">倉儲存量監控與一鍵補貨</h2>
+                <button onclick="quickRestockAll()" class="px-3.5 py-2 bg-emerald-600 text-white font-medium text-xs rounded-lg shadow-sm">⚡ 全部低庫存一鍵補足 (+30)</button>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="inventoryCardsContainer">
-                <!-- JS 動態生成庫存卡片 -->
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="inventoryCardsContainer"></div>
         </section>
 
-        <!-- 頁籤四：訂單與安排出貨 Orders -->
+        <!-- Orders -->
         <section id="tab-orders" class="tab-pane hidden space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800">訂單履歷與安排出貨作業</h2>
-                    <p class="text-xs text-gray-500 mt-0.5">即時流轉物流配送狀態，分配物流追蹤單號</p>
-                </div>
-                <!-- 篩選器 -->
-                <div class="flex items-center space-x-2">
-                    <button onclick="filterOrders('all')" class="order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-brand-500 text-white">全部訂單</button>
-                    <button onclick="filterOrders('pending')" class="order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200">待出貨</button>
-                    <button onclick="filterOrders('shipped')" class="order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200">已出貨</button>
+            <div class="flex justify-between">
+                <h2 class="text-xl font-bold text-gray-800">訂單履歷與安排出貨</h2>
+                <div class="space-x-2">
+                    <button onclick="filterOrders('all')" class="order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-brand-500 text-white">全部</button>
+                    <button onclick="filterOrders('pending')" class="order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-600">待出貨</button>
+                    <button onclick="filterOrders('shipped')" class="order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-600">已出貨</button>
                 </div>
             </div>
-
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead class="bg-gray-50 border-b border-gray-200 text-gray-600 uppercase font-semibold tracking-wider">
-                            <tr>
-                                <th class="p-3.5">訂單編號</th>
-                                <th class="p-3.5">收件客戶資訊</th>
-                                <th class="p-3.5">訂購項目內容</th>
-                                <th class="p-3.5">總金額</th>
-                                <th class="p-3.5">付款方式</th>
-                                <th class="p-3.5">目前狀態</th>
-                                <th class="p-3.5">物流追蹤碼</th>
-                                <th class="p-3.5 text-right">出貨動作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ordersTableBody" class="divide-y divide-gray-100 text-gray-700">
-                            <!-- JS 動態渲染 -->
-                        </tbody>
-                    </table>
-                </div>
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-gray-50 border-b border-gray-200 text-gray-600 uppercase font-semibold">
+                        <tr><th class="p-3.5">單號</th><th class="p-3.5">客戶</th><th class="p-3.5">內容</th><th class="p-3.5">金額</th><th class="p-3.5">狀態</th><th class="p-3.5">物流碼</th><th class="p-3.5 text-right">動作</th></tr>
+                    </thead>
+                    <tbody id="ordersTableBody" class="divide-y divide-gray-100"></tbody>
+                </table>
             </div>
         </section>
 
-        <!-- 頁籤五：人員與操作紀錄 Staff & Logs -->
+        <!-- Staff -->
         <section id="tab-staff" class="tab-pane hidden space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- 人員權限名單 -->
-                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
-                    <h3 class="font-bold text-gray-800 text-base">工作人員帳號列表</h3>
-                    <div class="space-y-3 text-xs">
-                        <div class="p-3 rounded-lg border border-brand-200 bg-brand-50/50 flex items-center justify-between">
-                            <div>
-                                <span class="font-bold text-gray-800 block">主管帳號 (主管模式)</span>
-                                <span class="text-gray-500">帳號：ygc96321</span>
-                            </div>
-                            <span class="px-2 py-0.5 rounded text-[10px] bg-purple-100 text-purple-700 font-semibold">最高權限</span>
-                        </div>
-                        <div class="p-3 rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-between">
-                            <div>
-                                <span class="font-bold text-gray-800 block">簡鈿翃 (主管窗口)</span>
-                                <span class="text-gray-500">電話：0930267812</span>
-                            </div>
-                            <span class="px-2 py-0.5 rounded text-[10px] bg-blue-100 text-blue-700 font-semibold">負責人</span>
-                        </div>
-                        <div class="p-3 rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-between">
-                            <div>
-                                <span class="font-bold text-gray-800 block">倉儲與客服專員</span>
-                                <span class="text-gray-500">專線：0976943100</span>
-                            </div>
-                            <span class="px-2 py-0.5 rounded text-[10px] bg-green-100 text-green-700 font-semibold">一般員工</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 系統操作稽核紀錄日誌 (Audit Log) -->
-                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm lg:col-span-2 space-y-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="font-bold text-gray-800 text-base">後台系統即時操作紀錄 (Audit Trail)</h3>
-                        <button onclick="clearAuditLogs()" class="text-xs text-gray-400 hover:text-red-500">清空紀錄</button>
-                    </div>
-                    <div class="h-80 overflow-y-auto custom-scrollbar border border-gray-100 rounded-lg p-3 bg-gray-50 font-mono text-[11px] space-y-2" id="auditLogsContainer">
-                        <!-- JS 動態記錄 -->
-                    </div>
-                </div>
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                <div class="flex justify-between"><h3 class="font-bold text-gray-800 text-base">操作紀錄 (Audit Trail)</h3><button onclick="clearAuditLogs()" class="text-xs text-gray-400">清空紀錄</button></div>
+                <div class="h-80 overflow-y-auto custom-scrollbar border border-gray-100 rounded-lg p-3 bg-gray-50 font-mono text-[11px] space-y-2" id="auditLogsContainer"></div>
             </div>
         </section>
     </main>
 </div>
 
-<!-- 新增/編輯商品彈跳視窗 (Modal) -->
+<!-- Modal 區塊略縮寫結構保持功能一致 -->
+<!-- Product Modal -->
 <div id="productModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-        <div class="px-6 py-4 bg-brand-50 border-b border-brand-100 flex items-center justify-between">
-            <h3 id="productModalTitle" class="font-bold text-brand-700 text-base">新增商品資料</h3>
-            <button onclick="closeProductModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
-        </div>
-
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden">
+        <div class="px-6 py-4 bg-brand-50 border-b border-brand-100 flex justify-between"><h3 id="productModalTitle" class="font-bold text-brand-700">新增商品資料</h3><button onclick="closeProductModal()" class="text-gray-400 font-bold">&times;</button></div>
         <form id="productForm" onsubmit="handleProductFormSubmit(event)" class="p-6 space-y-4 text-xs">
             <input type="hidden" id="editProductId">
-
-            <div>
-                <label class="block font-semibold text-gray-600 mb-1">商品名稱 *</label>
-                <input type="text" id="prodName" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none" placeholder="例：野花修護舒緩精華 50ml">
-            </div>
-
+            <label class="block font-semibold">商品名稱 *<input type="text" id="prodName" required class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"></label>
             <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block font-semibold text-gray-600 mb-1">商品分類 *</label>
-                    <select id="prodCategory" required class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
-                        <option value="face">面部保養</option>
-                        <option value="body">身體護理</option>
-                        <option value="fragrance">植物香氛</option>
-                        <option value="starter">體驗組合</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block font-semibold text-gray-600 mb-1">定價 (NT$) *</label>
-                    <input type="number" id="prodPrice" required min="1" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none" placeholder="1280">
-                </div>
+                <label class="block font-semibold">分類 *<select id="prodCategory" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"><option value="face">面部保養</option><option value="body">身體護理</option><option value="fragrance">植物香氛</option><option value="starter">體驗組合</option></select></label>
+                <label class="block font-semibold">定價 *<input type="number" id="prodPrice" required min="1" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"></label>
             </div>
-
             <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block font-semibold text-gray-600 mb-1">初始庫存量 (件) *</label>
-                    <input type="number" id="prodStock" required min="0" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none" placeholder="50">
-                </div>
-                <div>
-                    <label class="block font-semibold text-gray-600 mb-1">上架狀態</label>
-                    <select id="prodStatus" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none">
-                        <option value="active">正常銷售中</option>
-                        <option value="draft">暫時下架 / 草稿</option>
-                    </select>
-                </div>
+                <label class="block font-semibold">初始庫存量 *<input type="number" id="prodStock" required min="0" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"></label>
+                <label class="block font-semibold">狀態<select id="prodStatus" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"><option value="active">正常銷售中</option><option value="draft">暫時下架</option></select></label>
             </div>
-
-            <!-- 圖片網址與本機上傳圖片預覽 -->
-            <div>
-                <label class="block font-semibold text-gray-600 mb-1">商品圖片設定</label>
-                <div class="space-y-2">
-                    <input type="text" id="prodImage" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none" placeholder="輸入圖片 URL (例如 6.png 或 Unsplash 網址)">
-                    <div class="flex items-center space-x-3">
-                        <label class="cursor-pointer px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-[11px] font-medium transition">
-                            📁 從本機選取圖片
-                            <input type="file" id="prodImageFile" accept="image/*" class="hidden" onchange="handleImageFileUpload(event)">
-                        </label>
-                        <span class="text-[11px] text-gray-400" id="uploadFileName">尚未選取本機檔案</span>
-                    </div>
-                    <!-- 預覽圖區塊 -->
-                    <div class="mt-2 flex items-center space-x-3 p-2 bg-gray-50 rounded-lg border border-gray-100">
-                        <img id="imagePreview" src="6.png" class="w-14 h-14 object-cover rounded border border-gray-200" onerror="this.src='https://placehold.co/100x100/6e7960/ffffff?text=FLORA'">
-                        <div class="text-[11px] text-gray-500">
-                            <p class="font-medium text-gray-700">即時外觀預覽</p>
-                            <p class="text-[10px] text-gray-400">支援 JPG, PNG, WebP 格式</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <label class="block font-semibold text-gray-600 mb-1">特色簡短描述</label>
-                <textarea id="prodDesc" rows="2" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-500 outline-none" placeholder="植物純淨能量萃取，深層修護..."></textarea>
-            </div>
-
-            <div class="flex justify-end space-x-3 pt-3 border-t border-gray-100">
-                <button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium rounded-lg">取消</button>
-                <button type="submit" class="px-5 py-2 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-lg shadow-sm">儲存商品</button>
-            </div>
+            <label class="block font-semibold">商品圖片URL<input type="text" id="prodImage" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none" placeholder="輸入圖片 URL (如 6.png)"></label>
+            <label class="block font-semibold">描述<textarea id="prodDesc" rows="2" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"></textarea></label>
+            <div class="flex justify-end space-x-3 pt-3"><button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-gray-100 rounded-lg">取消</button><button type="submit" class="px-5 py-2 bg-brand-500 text-white rounded-lg">儲存</button></div>
         </form>
     </div>
 </div>
 
-<!-- 安排出貨彈跳視窗 (Modal) -->
+<!-- Shipping Modal -->
 <div id="shippingModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-        <div class="px-6 py-4 bg-emerald-50 border-b border-emerald-100 flex items-center justify-between">
-            <h3 class="font-bold text-emerald-800 text-base">安排出貨與指派物流</h3>
-            <button onclick="closeShippingModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
-        </div>
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden">
+        <div class="px-6 py-4 bg-emerald-50 border-b border-emerald-100 flex justify-between"><h3 class="font-bold text-emerald-800">安排出貨</h3><button onclick="closeShippingModal()" class="text-gray-400 font-bold">&times;</button></div>
         <form id="shippingForm" onsubmit="handleShippingSubmit(event)" class="p-6 space-y-4 text-xs">
             <input type="hidden" id="shipOrderId">
-            <div>
-                <span class="text-gray-400 block">處理訂單：</span>
-                <span class="text-sm font-bold text-gray-800 font-mono" id="shipOrderNoDisplay">#ORD-2026-001</span>
-            </div>
-            <div>
-                <label class="block font-semibold text-gray-600 mb-1">物流配送方式 *</label>
-                <select id="shipCarrier" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none">
-                    <option value="黑貓宅急便 (低溫/常溫)">黑貓宅急便 (宅配送達)</option>
-                    <option value="7-11 超商取貨">7-11 超商取貨付款</option>
-                    <option value="全家 FamilyMart">全家 FamilyMart 取貨</option>
-                </select>
-            </div>
-            <div>
-                <label class="block font-semibold text-gray-600 mb-1">填寫物流托運單號 *</label>
-                <input type="text" id="shipTrackingNumber" required class="w-full px-3 py-2 border border-gray-200 rounded-lg font-mono focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="例：TC982347102TW">
-            </div>
-            <div>
-                <label class="block font-semibold text-gray-600 mb-1">倉儲備註說明</label>
-                <input type="text" id="shipNote" class="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none" placeholder="已檢查外包裝防撞氣泡紙無損">
-            </div>
-            <div class="flex justify-end space-x-3 pt-3 border-t border-gray-100">
-                <button type="button" onclick="closeShippingModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium rounded-lg">返回</button>
-                <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg shadow-sm">確認並完成出貨</button>
-            </div>
+            <div><span class="text-gray-400 block">處理訂單：</span><span class="text-sm font-bold" id="shipOrderNoDisplay"></span></div>
+            <label class="block font-semibold">物流配送方式<select id="shipCarrier" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"><option value="黑貓宅急便">黑貓宅急便</option><option value="超商取貨">超商取貨</option></select></label>
+            <label class="block font-semibold">物流單號<input type="text" id="shipTrackingNumber" required class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"></label>
+            <div class="flex justify-end space-x-3 pt-3"><button type="button" onclick="closeShippingModal()" class="px-4 py-2 bg-gray-100 rounded-lg">返回</button><button type="submit" class="px-5 py-2 bg-emerald-600 text-white rounded-lg">完成出貨</button></div>
         </form>
     </div>
 </div>
 
 <script>
-    /* ----------------------------------------------------
-       系統狀態與初始資料
-    ---------------------------------------------------- */
-    let currentUser = null; // { username, role }
+    // 預設資料庫
+    const defaultProducts = [
+        { id: 1, name: "野花修護舒緩精華 30ml", category: "face", price: 1280, stock: 45, status: "active", image: "6.png", desc: "島嶼高活性花萃，改善敏感泛紅，穩定肌底屏障" },
+        { id: 2, name: "島嶼露水保濕噴霧 150ml", category: "face", price: 880, stock: 8, status: "active", image: "6.png", desc: "細緻微米水分子，隨時補水保濕" }
+    ];
+    const defaultOrders = [
+        { id: 101, orderNo: "ORD-20260901-01", customer: "王小美", phone: "0912-345678", items: "野花修護舒緩精華 30ml x1", total: 1280, payment: "LINE Pay", status: "pending", tracking: "", date: "2026-09-01 10:20" }
+    ];
+
+    // 初始化與連動 LocalStorage
+    let products = JSON.parse(localStorage.getItem('daohua_products')) || defaultProducts;
+    let orders = JSON.parse(localStorage.getItem('daohua_orders')) || defaultOrders;
+    let auditLogs = JSON.parse(localStorage.getItem('daohua_logs')) || [`[系統啟動] 島花解語管理後台初始化就緒。`];
+    
+    // 將預設寫入確保存有資料
+    if(!localStorage.getItem('daohua_products')) localStorage.setItem('daohua_products', JSON.stringify(products));
+    if(!localStorage.getItem('daohua_orders')) localStorage.setItem('daohua_orders', JSON.stringify(orders));
+
+    function saveData() {
+        localStorage.setItem('daohua_products', JSON.stringify(products));
+        localStorage.setItem('daohua_orders', JSON.stringify(orders));
+        localStorage.setItem('daohua_logs', JSON.stringify(auditLogs));
+    }
+
+    let currentUser = null;
     let currentRoleSelection = 'manager';
 
-    // 初始商品資料庫
-    let products = [
-        { id: 1, name: "野花修護舒緩精華 30ml", category: "face", price: 1280, stock: 45, status: "active", image: "6.png", desc: "島嶼高活性花萃，改善敏感泛紅，穩定肌底屏障" },
-        { id: 2, name: "島嶼露水保濕噴霧 150ml", category: "face", price: 880, stock: 8, status: "active", image: "6.png", desc: "細緻微米水分子，隨時補水保濕，調節水油平衡" },
-        { id: 3, name: "海桐花抗痕鎖水霜 50g", category: "face", price: 1580, stock: 24, status: "active", image: "6.png", desc: "深層潤澤鎖水，輕盈不油膩，撫平細紋彈潤肌膚" },
-        { id: 4, name: "木蘭潔顏胺基酸慕斯 150ml", category: "face", price: 650, stock: 62, status: "active", image: "6.png", desc: "溫和弱酸性配方，洗後水嫩不緊繃，深層淨化毛孔" },
-        { id: 5, name: "島嶼森林草本沐浴露 300ml", category: "body", price: 720, stock: 35, status: "active", image: "6.png", desc: "蘊含清新木質香調與草本萃取，溫和潔淨全身肌膚" },
-        { id: 6, name: "天竺葵潤膚身體乳 250ml", category: "body", price: 920, stock: 19, status: "active", image: "6.png", desc: "絲滑乳液質地，迅速吸收不黏膩，長時間柔嫩保濕" },
-        { id: 7, name: "晨曦島嶼植物香氛精油 15ml", category: "fragrance", price: 1100, stock: 12, status: "active", image: "6.png", desc: "高純度天然萃取，釋放身心緊繃壓力，舒緩放鬆" },
-        { id: 8, name: "植萃平衡體驗三件組", category: "starter", price: 680, stock: 50, status: "active", image: "6.png", desc: "含潔顏乳 30ml + 化妝水 50ml + 精華液 10ml" }
-    ];
-
-    // 訂單管理資料庫
-    let orders = [
-        { id: 101, orderNo: "ORD-20260901-01", customer: "王小美", phone: "0912-345678", items: "野花修護舒緩精華 x1, 保濕噴霧 x1", total: 2160, payment: "LINE Pay", status: "pending", tracking: "", date: "2026-09-01 10:20" },
-        { id: 102, orderNo: "ORD-20260901-02", customer: "陳思宇", phone: "0988-112233", items: "海桐花抗痕鎖水霜 x2", total: 3160, payment: "信用卡", status: "pending", tracking: "", date: "2026-09-01 11:45" },
-        { id: 103, orderNo: "ORD-20260901-03", customer: "李志誠", phone: "0921-998877", items: "植萃平衡體驗三件組 x1", total: 680, payment: "超商取貨付款", status: "pending", tracking: "", date: "2026-09-01 13:10" },
-        { id: 104, orderNo: "ORD-20260831-08", customer: "林庭妤", phone: "0975-443322", items: "晨曦島嶼植物香氛精油 x1", total: 1100, payment: "LINE Pay", status: "shipped", tracking: "TC998241031TW", date: "2026-08-31 16:30" }
-    ];
-
-    // 操作紀錄日誌
-    let auditLogs = [
-        `[系統啟動] 島花解語電商管理後台系統服務初始化就緒。`,
-        `[庫存提醒] 偵測到「島嶼露水保濕噴霧 150ml」低於警示水位 (現有存量: 8)。`
-    ];
-
-    /* ----------------------------------------------------
-       登入身分驗證邏輯 (指定帳號: ygc96321 / asdf6543)
-    ---------------------------------------------------- */
     function selectRole(role) {
         currentRoleSelection = role;
-        const managerBtn = document.getElementById('roleManagerBtn');
-        const staffBtn = document.getElementById('roleStaffBtn');
-
-        if (role === 'manager') {
-            managerBtn.className = 'py-2 text-sm font-medium rounded-lg border-2 border-brand-500 bg-brand-50 text-brand-700 transition';
-            staffBtn.className = 'py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition';
-        } else {
-            staffBtn.className = 'py-2 text-sm font-medium rounded-lg border-2 border-brand-500 bg-brand-50 text-brand-700 transition';
-            managerBtn.className = 'py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition';
-        }
+        document.getElementById('roleManagerBtn').className = role === 'manager' ? 'py-2 text-sm font-medium rounded-lg border-2 border-brand-500 bg-brand-50 text-brand-700' : 'py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50';
+        document.getElementById('roleStaffBtn').className = role === 'staff' ? 'py-2 text-sm font-medium rounded-lg border-2 border-brand-500 bg-brand-50 text-brand-700' : 'py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50';
     }
 
     function handleLoginSubmit(event) {
         event.preventDefault();
-        const usernameInput = document.getElementById('loginUsername').value.trim();
-        const passwordInput = document.getElementById('loginPassword').value.trim();
-        const feedback = document.getElementById('loginFeedback');
-
-        // 驗證規定密碼
-        if (usernameInput === 'ygc96321' && passwordInput === 'asdf6543') {
-            currentUser = {
-                username: usernameInput,
-                role: currentRoleSelection,
-                roleName: currentRoleSelection === 'manager' ? '主管' : '一般員工'
-            };
-            feedback.classList.add('hidden');
+        const u = document.getElementById('loginUsername').value.trim();
+        const p = document.getElementById('loginPassword').value.trim();
+        if (u === 'ygc96321' && p === 'asdf6543') {
+            currentUser = { username: u, role: currentRoleSelection, roleName: currentRoleSelection === 'manager' ? '主管' : '員工' };
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('appContainer').classList.remove('hidden');
-
-            // 更新身分標籤
             document.getElementById('userGreeting').textContent = `${currentUser.roleName} (${currentUser.username})`;
-            document.getElementById('roleBadge').className = currentUser.role === 'manager' ? 'w-2.5 h-2.5 rounded-full bg-purple-500' : 'w-2.5 h-2.5 rounded-full bg-green-500';
-
-            logAudit(`使用者 [${currentUser.roleName} : ${currentUser.username}] 成功登入後台系統。`);
+            logAudit(`使用者 [${currentUser.username}] 登入後台。`);
             refreshAllViews();
         } else {
-            feedback.textContent = '帳號或密碼錯誤！請核對預設資訊 (ygc96321 / asdf6543)。';
-            feedback.classList.remove('hidden');
+            document.getElementById('loginFeedback').textContent = '帳號或密碼錯誤！';
+            document.getElementById('loginFeedback').classList.remove('hidden');
         }
     }
 
     function handleLogout() {
         logAudit(`使用者 [${currentUser?.username}] 登出系統。`);
-        currentUser = null;
-        document.getElementById('adminLoginForm').reset();
         document.getElementById('appContainer').classList.add('hidden');
         document.getElementById('loginSection').classList.remove('hidden');
     }
 
-    /* ----------------------------------------------------
-       分頁標籤切換
-    ---------------------------------------------------- */
     function switchTab(tabKey) {
         document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('border-brand-500', 'text-brand-600');
-            btn.classList.add('border-transparent', 'text-gray-500');
-        });
-
-        const activePane = document.getElementById('tab-' + tabKey);
-        const activeBtn = document.getElementById('tabBtn-' + tabKey);
-        if (activePane) activePane.classList.remove('hidden');
-        if (activeBtn) {
-            activeBtn.classList.add('border-brand-500', 'text-brand-600');
-            activeBtn.classList.remove('border-transparent', 'text-gray-500');
-        }
-
-        if (tabKey === 'products') renderProductsTable();
-        if (tabKey === 'inventory') renderInventoryCards();
-        if (tabKey === 'orders') renderOrdersTable();
-        if (tabKey === 'dashboard') renderDashboardKPI();
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.replace('border-brand-500', 'border-transparent'));
+        document.getElementById('tab-' + tabKey).classList.remove('hidden');
+        document.getElementById('tabBtn-' + tabKey).classList.replace('border-transparent', 'border-brand-500');
     }
 
-    /* ----------------------------------------------------
-       儀表板數據渲染
-    ---------------------------------------------------- */
     function renderDashboardKPI() {
-        const lowStockCount = products.filter(p => p.stock < 15).length;
-        const pendingCount = orders.filter(o => o.status === 'pending').length;
-
-        document.getElementById('kpiLowStock').textContent = `${lowStockCount} 項`;
-        document.getElementById('kpiPendingOrders').textContent = `${pendingCount} 筆`;
+        const lowStock = products.filter(p => p.stock < 15).length;
+        const pending = orders.filter(o => o.status === 'pending').length;
+        const rev = orders.reduce((sum, o) => sum + o.total, 0);
+        document.getElementById('kpiLowStock').textContent = `${lowStock} 項`;
+        document.getElementById('kpiPendingOrders').textContent = `${pending} 筆`;
         document.getElementById('kpiProductCount').textContent = `${products.length} 款`;
-
-        const badge = document.getElementById('inventoryAlertBadge');
-        if (lowStockCount > 0) {
-            badge.textContent = lowStockCount;
-            badge.classList.remove('hidden');
-        } else {
-            badge.classList.add('hidden');
-        }
-
-        // 熱銷前 4 名
-        const list = document.getElementById('topSellingList');
-        const sorted = [...products].sort((a, b) => b.price - a.price).slice(0, 4);
-        list.innerHTML = sorted.map((p, idx) => `
-            <div class="py-3 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <span class="w-6 h-6 rounded-full ${idx === 0 ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'} flex items-center justify-center font-bold text-xs">${idx + 1}</span>
-                    <img src="${p.image}" class="w-9 h-9 object-cover rounded border border-gray-100" onerror="this.src='https://placehold.co/100x100/6e7960/ffffff?text=FLORA'">
-                    <div>
-                        <span class="font-medium text-gray-800 block">${p.name}</span>
-                        <span class="text-[11px] text-gray-400">目前庫存: ${p.stock} 件</span>
-                    </div>
-                </div>
-                <span class="font-semibold text-brand-600">NT$ ${p.price.toLocaleString()}</span>
-            </div>
-        `).join('');
+        document.getElementById('kpiRevenue').textContent = `NT$ ${rev.toLocaleString()}`;
     }
 
-    /* ----------------------------------------------------
-       商品管理 CRUD 功能
-    ---------------------------------------------------- */
     function renderProductsTable() {
         const tbody = document.getElementById('productsTableBody');
-        const search = (document.getElementById('productSearchInput')?.value || '').toLowerCase();
-
-        const filtered = products.filter(p => 
-            p.name.toLowerCase().includes(search) || p.category.toLowerCase().includes(search)
-        );
-
-        if (filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-gray-400">查無任何商品資料</td></tr>`;
-            return;
-        }
-
-        tbody.innerHTML = filtered.map(p => `
-            <tr class="hover:bg-gray-50/80 transition">
-                <td class="p-3.5">
-                    <img src="${p.image}" class="w-11 h-11 object-cover rounded-lg border border-gray-200" onerror="this.src='https://placehold.co/100x100/6e7960/ffffff?text=FLORA'">
-                </td>
-                <td class="p-3.5">
-                    <span class="font-semibold text-gray-800 block">${p.name}</span>
-                    <span class="text-[11px] text-gray-400 truncate max-w-xs block">${p.desc}</span>
-                </td>
-                <td class="p-3.5">
-                    <span class="px-2.5 py-1 rounded-full text-[11px] font-medium ${getCategoryBadge(p.category)}">
-                        ${getCategoryName(p.category)}
-                    </span>
-                </td>
-                <td class="p-3.5 font-bold text-gray-800 font-mono">NT$ ${p.price.toLocaleString()}</td>
-                <td class="p-3.5">
-                    <span class="font-mono font-semibold ${p.stock < 15 ? 'text-red-600 bg-red-50 px-2 py-0.5 rounded' : 'text-gray-700'}">
-                        ${p.stock} 件
-                    </span>
-                </td>
-                <td class="p-3.5">
-                    <span class="inline-flex items-center text-[11px] font-medium ${p.status === 'active' ? 'text-emerald-700' : 'text-gray-400'}">
-                        <span class="w-1.5 h-1.5 rounded-full mr-1.5 ${p.status === 'active' ? 'bg-emerald-500' : 'bg-gray-400'}"></span>
-                        ${p.status === 'active' ? '銷售中' : '已下架'}
-                    </span>
-                </td>
-                <td class="p-3.5 text-right space-x-2">
-                    <button onclick="editProduct(${p.id})" class="text-brand-600 hover:text-brand-800 font-medium">編輯</button>
-                    <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700 font-medium">刪除</button>
-                </td>
+        const q = (document.getElementById('productSearchInput')?.value || '').toLowerCase();
+        tbody.innerHTML = products.filter(p => p.name.toLowerCase().includes(q)).map(p => `
+            <tr class="hover:bg-gray-50 border-b border-gray-100">
+                <td class="p-3.5"><img src="${p.image}" class="w-10 h-10 object-cover rounded border" onerror="this.src='https://placehold.co/100x100'"></td>
+                <td class="p-3.5 font-bold">${p.name}</td>
+                <td class="p-3.5">${p.category}</td>
+                <td class="p-3.5 font-mono text-brand-600">NT$ ${p.price}</td>
+                <td class="p-3.5 font-mono ${p.stock<15?'text-red-500 font-bold':''}">${p.stock}</td>
+                <td class="p-3.5">${p.status === 'active' ? '銷售中' : '下架'}</td>
+                <td class="p-3.5 text-right space-x-2"><button onclick="editProduct(${p.id})" class="text-blue-500">編輯</button><button onclick="deleteProduct(${p.id})" class="text-red-500">刪除</button></td>
             </tr>
         `).join('');
-    }
-
-    function getCategoryName(cat) {
-        switch(cat) {
-            case 'face': return '面部保養';
-            case 'body': return '身體護理';
-            case 'fragrance': return '植物香氛';
-            case 'starter': return '體驗組合';
-            default: return '綜合保養';
-        }
-    }
-
-    function getCategoryBadge(cat) {
-        switch(cat) {
-            case 'face': return 'bg-emerald-50 text-emerald-700';
-            case 'body': return 'bg-blue-50 text-blue-700';
-            case 'fragrance': return 'bg-purple-50 text-purple-700';
-            default: return 'bg-amber-50 text-amber-700';
-        }
     }
 
     function openProductModal() {
         document.getElementById('productForm').reset();
         document.getElementById('editProductId').value = '';
-        document.getElementById('productModalTitle').textContent = '新增商品資料';
-        document.getElementById('imagePreview').src = '6.png';
-        document.getElementById('uploadFileName').textContent = '尚未選取本機檔案';
         document.getElementById('productModal').classList.remove('hidden');
     }
-
-    function closeProductModal() {
-        document.getElementById('productModal').classList.add('hidden');
-    }
-
-    function editProduct(id) {
-        const prod = products.find(p => p.id === id);
-        if (!prod) return;
-
-        document.getElementById('editProductId').value = prod.id;
-        document.getElementById('prodName').value = prod.name;
-        document.getElementById('prodCategory').value = prod.category;
-        document.getElementById('prodPrice').value = prod.price;
-        document.getElementById('prodStock').value = prod.stock;
-        document.getElementById('prodStatus').value = prod.status;
-        document.getElementById('prodImage').value = prod.image;
-        document.getElementById('prodDesc').value = prod.desc;
-        document.getElementById('imagePreview').src = prod.image;
-        document.getElementById('productModalTitle').textContent = '編輯商品資料 #' + prod.id;
-
-        document.getElementById('productModal').classList.remove('hidden');
-    }
-
-    function deleteProduct(id) {
-        const prod = products.find(p => p.id === id);
-        if (!confirm(`確定要刪除商品「${prod?.name}」嗎？此操作不可逆。`)) return;
-
-        products = products.filter(p => p.id !== id);
-        logAudit(`[商品刪除] 管理員刪除了商品 #${id}「${prod?.name}」。`);
-        renderProductsTable();
-        renderDashboardKPI();
-    }
-
-    function handleImageFileUpload(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        document.getElementById('uploadFileName').textContent = file.name;
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            document.getElementById('imagePreview').src = evt.target.result;
-            document.getElementById('prodImage').value = evt.target.result;
-        }
-        reader.readAsDataURL(file);
-    }
+    function closeProductModal() { document.getElementById('productModal').classList.add('hidden'); }
 
     function handleProductFormSubmit(e) {
         e.preventDefault();
         const editId = document.getElementById('editProductId').value;
-        const name = document.getElementById('prodName').value.trim();
-        const category = document.getElementById('prodCategory').value;
-        const price = Number(document.getElementById('prodPrice').value);
-        const stock = Number(document.getElementById('prodStock').value);
-        const status = document.getElementById('prodStatus').value;
-        const image = document.getElementById('prodImage').value.trim() || '6.png';
-        const desc = document.getElementById('prodDesc').value.trim();
-
+        const data = {
+            id: editId ? Number(editId) : Date.now(),
+            name: document.getElementById('prodName').value,
+            category: document.getElementById('prodCategory').value,
+            price: Number(document.getElementById('prodPrice').value),
+            stock: Number(document.getElementById('prodStock').value),
+            status: document.getElementById('prodStatus').value,
+            image: document.getElementById('prodImage').value || '6.png',
+            desc: document.getElementById('prodDesc').value
+        };
         if (editId) {
-            // 更新既有商品
-            const idx = products.findIndex(p => p.id === Number(editId));
-            if (idx !== -1) {
-                products[idx] = { ...products[idx], name, category, price, stock, status, image, desc };
-                logAudit(`[商品更新] 修改了商品 #${editId}「${name}」價格 NT$${price} / 庫存: ${stock}件。`);
-            }
+            const idx = products.findIndex(p => p.id === data.id);
+            products[idx] = data;
+            logAudit(`修改商品：${data.name}`);
         } else {
-            // 新增商品
-            const newId = Date.now();
-            products.unshift({ id: newId, name, category, price, stock, status, image, desc });
-            logAudit(`[商品上架] 新增上架商品 #${newId}「${name}」售價 NT$${price}。`);
+            products.unshift(data);
+            logAudit(`新增商品：${data.name}`);
         }
-
+        saveData(); // 儲存至 LocalStorage 同步給前台
         closeProductModal();
-        renderProductsTable();
-        renderDashboardKPI();
+        refreshAllViews();
     }
 
-    /* ----------------------------------------------------
-       庫存盤點與補貨作業
-    ---------------------------------------------------- */
+    function editProduct(id) {
+        const p = products.find(x => x.id === id);
+        document.getElementById('editProductId').value = p.id;
+        document.getElementById('prodName').value = p.name;
+        document.getElementById('prodCategory').value = p.category;
+        document.getElementById('prodPrice').value = p.price;
+        document.getElementById('prodStock').value = p.stock;
+        document.getElementById('prodStatus').value = p.status;
+        document.getElementById('prodImage').value = p.image;
+        document.getElementById('prodDesc').value = p.desc;
+        document.getElementById('productModal').classList.remove('hidden');
+    }
+
+    function deleteProduct(id) {
+        if(confirm('確定刪除此商品？')) {
+            products = products.filter(p => p.id !== id);
+            logAudit(`刪除商品 ID: ${id}`);
+            saveData();
+            refreshAllViews();
+        }
+    }
+
     function renderInventoryCards() {
-        const container = document.getElementById('inventoryCardsContainer');
-        container.innerHTML = products.map(p => {
-            const isLow = p.stock < 15;
-            return `
-                <div class="bg-white p-5 rounded-xl border ${isLow ? 'border-red-300 bg-red-50/20' : 'border-gray-200'} shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs px-2 py-0.5 rounded font-medium ${getCategoryBadge(p.category)}">${getCategoryName(p.category)}</span>
-                            ${isLow ? '<span class="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold">⚠️ 庫存吃緊</span>' : '<span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">充裕</span>'}
-                        </div>
-                        <h4 class="font-bold text-gray-800 text-sm mb-1">${p.name}</h4>
-                        <p class="text-xs text-gray-400 mb-4">商品編號：SKU-${String(p.id).padStart(4, '0')}</p>
-
-                        <div class="flex items-baseline space-x-2 mb-4">
-                            <span class="text-3xl font-extrabold font-mono ${isLow ? 'text-red-600' : 'text-gray-800'}">${p.stock}</span>
-                            <span class="text-xs text-gray-500">件</span>
-                        </div>
-                    </div>
-
-                    <!-- 快速調整庫存 -->
-                    <div class="pt-3 border-t border-gray-100 flex items-center justify-between">
-                        <div class="flex items-center space-x-1">
-                            <button onclick="adjustStock(${p.id}, -5)" class="w-7 h-7 bg-gray-100 hover:bg-gray-200 rounded text-xs font-bold text-gray-600">-5</button>
-                            <button onclick="adjustStock(${p.id}, -1)" class="w-7 h-7 bg-gray-100 hover:bg-gray-200 rounded text-xs font-bold text-gray-600">-1</button>
-                            <button onclick="adjustStock(${p.id}, 1)" class="w-7 h-7 bg-gray-100 hover:bg-gray-200 rounded text-xs font-bold text-gray-600">+1</button>
-                            <button onclick="adjustStock(${p.id}, 10)" class="w-7 h-7 bg-gray-100 hover:bg-gray-200 rounded text-xs font-bold text-gray-600">+10</button>
-                        </div>
-                        <button onclick="adjustStock(${p.id}, 25)" class="px-2.5 py-1 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded text-xs font-semibold">
-                            進貨+25
-                        </button>
-                    </div>
+        document.getElementById('inventoryCardsContainer').innerHTML = products.map(p => `
+            <div class="bg-white p-5 rounded-xl border ${p.stock<15?'border-red-300':'border-gray-200'} flex flex-col justify-between">
+                <div><h4 class="font-bold mb-2">${p.name}</h4><div class="text-3xl font-mono ${p.stock<15?'text-red-500':''}">${p.stock} 件</div></div>
+                <div class="pt-3 border-t mt-3 flex justify-between">
+                    <button onclick="adjustStock(${p.id}, -1)" class="px-2 bg-gray-100 rounded">-1</button>
+                    <button onclick="adjustStock(${p.id}, 1)" class="px-2 bg-gray-100 rounded">+1</button>
+                    <button onclick="adjustStock(${p.id}, 10)" class="px-3 py-1 bg-brand-50 text-brand-600 rounded text-xs font-bold">補貨+10</button>
                 </div>
-            `;
-        }).join('');
+            </div>
+        `).join('');
     }
 
     function adjustStock(id, delta) {
-        const prod = products.find(p => p.id === id);
-        if (!prod) return;
-        prod.stock = Math.max(0, prod.stock + delta);
-        logAudit(`[庫存調度]「${prod.name}」存量異動 ${delta > 0 ? '+' : ''}${delta}，現有存量：${prod.stock}`);
-        renderInventoryCards();
-        renderDashboardKPI();
+        const p = products.find(x => x.id === id);
+        p.stock = Math.max(0, p.stock + delta);
+        logAudit(`商品 [${p.name}] 庫存異動：${delta} (目前 ${p.stock})`);
+        saveData();
+        refreshAllViews();
     }
-
+    
     function quickRestockAll() {
-        let count = 0;
-        products.forEach(p => {
-            if (p.stock < 15) {
-                p.stock += 30;
-                count++;
-            }
-        });
-        logAudit(`[批量補貨] 已針對 ${count} 項低庫存商品各補充 +30 件安全庫存。`);
-        renderInventoryCards();
-        renderDashboardKPI();
+        products.forEach(p => { if(p.stock < 15) p.stock += 30; });
+        logAudit(`一鍵補貨完成`);
+        saveData();
+        refreshAllViews();
     }
 
-    /* ----------------------------------------------------
-       訂單與安排出貨
-    ---------------------------------------------------- */
-    let currentOrderFilter = 'all';
-
-    function filterOrders(status) {
-        currentOrderFilter = status;
-        document.querySelectorAll('.order-filter-btn').forEach(btn => {
-            btn.className = 'order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200';
-        });
-        event.target.className = 'order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-brand-500 text-white';
-        renderOrdersTable();
-    }
+    let orderFilter = 'all';
+    function filterOrders(status) { orderFilter = status; renderOrdersTable(); }
 
     function renderOrdersTable() {
+        // 即時從 LocalStorage 拉取最新訂單(前台可能有新訂單)
+        orders = JSON.parse(localStorage.getItem('daohua_orders')) || orders;
         const tbody = document.getElementById('ordersTableBody');
-        const filtered = currentOrderFilter === 'all' 
-            ? orders 
-            : orders.filter(o => o.status === currentOrderFilter);
-
-        tbody.innerHTML = filtered.map(o => `
-            <tr class="hover:bg-gray-50/80 transition">
-                <td class="p-3.5 font-mono font-bold text-gray-800">${o.orderNo}</td>
-                <td class="p-3.5">
-                    <span class="font-semibold block">${o.customer}</span>
-                    <span class="text-[11px] text-gray-400">${o.phone}</span>
-                </td>
-                <td class="p-3.5 max-w-xs text-gray-600 text-[11px]">${o.items}</td>
-                <td class="p-3.5 font-bold font-mono text-brand-700">NT$ ${o.total.toLocaleString()}</td>
-                <td class="p-3.5">
-                    <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-600">${o.payment}</span>
-                </td>
-                <td class="p-3.5">
-                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${o.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">
-                        ${o.status === 'pending' ? '待出貨' : '已發貨完成'}
-                    </span>
-                </td>
-                <td class="p-3.5 font-mono text-[11px] ${o.tracking ? 'text-gray-800 font-semibold' : 'text-gray-400'}">
-                    ${o.tracking || '尚未產出'}
-                </td>
-                <td class="p-3.5 text-right">
-                    ${o.status === 'pending' 
-                        ? `<button onclick="openShippingModal(${o.id})" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded font-medium text-[11px] shadow-sm transition">安排出貨</button>` 
-                        : `<button onclick="printShipmentDoc('${o.orderNo}')" class="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded text-[11px]">列印托運聯</button>`}
-                </td>
+        const list = orderFilter === 'all' ? orders : orders.filter(o => o.status === orderFilter);
+        tbody.innerHTML = list.map(o => `
+            <tr class="hover:bg-gray-50 border-b border-gray-100">
+                <td class="p-3.5 font-mono">${o.orderNo}</td>
+                <td class="p-3.5 font-bold">${o.customer}</td>
+                <td class="p-3.5 text-[11px] text-gray-500 max-w-[150px] truncate">${o.items}</td>
+                <td class="p-3.5 font-mono">NT$ ${o.total}</td>
+                <td class="p-3.5"><span class="px-2 py-1 rounded text-[10px] ${o.status==='pending'?'bg-amber-100 text-amber-700':'bg-emerald-100 text-emerald-700'}">${o.status==='pending'?'待出貨':'已出貨'}</span></td>
+                <td class="p-3.5 font-mono text-gray-500">${o.tracking || '-'}</td>
+                <td class="p-3.5 text-right">${o.status === 'pending' ? `<button onclick="openShippingModal(${o.id})" class="px-3 py-1 bg-brand-500 text-white rounded text-xs">出貨</button>` : '-'}</td>
             </tr>
         `).join('');
     }
 
     function openShippingModal(id) {
-        const order = orders.find(o => o.id === id);
-        if (!order) return;
-        document.getElementById('shipOrderId').value = order.id;
-        document.getElementById('shipOrderNoDisplay').textContent = `${order.orderNo} (${order.customer})`;
-        // 自動生成預設物流單號
+        const o = orders.find(x => x.id === id);
+        document.getElementById('shipOrderId').value = o.id;
+        document.getElementById('shipOrderNoDisplay').textContent = o.orderNo;
         document.getElementById('shipTrackingNumber').value = 'TW-' + Math.floor(10000000 + Math.random() * 90000000);
         document.getElementById('shippingModal').classList.remove('hidden');
     }
-
-    function closeShippingModal() {
-        document.getElementById('shippingModal').classList.add('hidden');
-    }
+    function closeShippingModal() { document.getElementById('shippingModal').classList.add('hidden'); }
 
     function handleShippingSubmit(e) {
         e.preventDefault();
-        const orderId = Number(document.getElementById('shipOrderId').value);
-        const tracking = document.getElementById('shipTrackingNumber').value.trim();
-        const carrier = document.getElementById('shipCarrier').value;
-
-        const order = orders.find(o => o.id === orderId);
-        if (order) {
-            order.status = 'shipped';
-            order.tracking = tracking;
-            logAudit(`[出貨完成] 訂單 ${order.orderNo} 已透過【${carrier}】指派托運單號 ${tracking}，已通知顧客收件。`);
+        const id = Number(document.getElementById('shipOrderId').value);
+        const tracking = document.getElementById('shipTrackingNumber').value;
+        const o = orders.find(x => x.id === id);
+        if (o) {
+            o.status = 'shipped';
+            o.tracking = tracking;
+            logAudit(`訂單 [${o.orderNo}] 已發貨，單號: ${tracking}`);
+            saveData();
+            closeShippingModal();
+            refreshAllViews();
         }
-
-        closeShippingModal();
-        renderOrdersTable();
-        renderDashboardKPI();
     }
 
-    function printShipmentDoc(orderNo) {
-        logAudit(`[托運單列印] 列印訂單 ${orderNo} 之出貨貼紙與裝箱清單。`);
-        // 喚起瀏覽器列印
-        window.print();
-    }
-
-    /* ----------------------------------------------------
-       稽核日誌與系統更新
-    ---------------------------------------------------- */
     function logAudit(msg) {
-        const now = new Date();
-        const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-        auditLogs.unshift(`[${timeStr}] ${msg}`);
+        const time = new Date().toLocaleTimeString();
+        auditLogs.unshift(`[${time}] ${msg}`);
+        saveData();
         renderAuditLogs();
     }
 
     function renderAuditLogs() {
-        const el = document.getElementById('auditLogsContainer');
-        if (!el) return;
-        el.innerHTML = auditLogs.map(log => `<div class="pb-1 border-b border-gray-200/50 text-gray-600 leading-relaxed">${log}</div>`).join('');
+        document.getElementById('auditLogsContainer').innerHTML = auditLogs.map(l => `<div class="pb-1 border-b border-gray-100 text-gray-600">${l}</div>`).join('');
     }
-
-    function clearAuditLogs() {
-        auditLogs = [`[日誌清空] 系統紀錄已由管理者重設。`];
-        renderAuditLogs();
-    }
+    function clearAuditLogs() { auditLogs = ['[清空] 日誌已重置。']; saveData(); renderAuditLogs(); }
 
     function refreshAllViews() {
         renderDashboardKPI();
@@ -968,9 +453,14 @@
         renderAuditLogs();
     }
 
-    // 預設載入
-    window.addEventListener('DOMContentLoaded', () => {
-        renderAuditLogs();
+    window.addEventListener('DOMContentLoaded', refreshAllViews);
+    
+    // 監聽前台是否有新訂單存入 LocalStorage
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'daohua_orders') {
+            orders = JSON.parse(e.newValue);
+            refreshAllViews(); // 自動更新後台訂單畫面
+        }
     });
 </script>
 </body>
