@@ -1,0 +1,222 @@
+/* ----------------------------------------------------
+   前台：商品資料庫 (優先讀取後台儲存的資料)
+---------------------------------------------------- */
+const defaultProducts = [
+    { id: 1, name: "野花修護舒緩精華 30ml", cat: "face", price: 1280, desc: "島嶼高活性花萃，改善敏感泛紅，穩定肌底屏障" },
+    { id: 2, name: "島嶼露水保濕噴霧 150ml", cat: "face", price: 880, desc: "細緻微米水分子，隨時補水保濕，調節水油平衡" },
+    { id: 3, name: "海桐花抗痕鎖水霜 50g", cat: "face", price: 1580, desc: "深層潤澤鎖水，輕盈不油膩，撫平細紋彈潤肌膚" },
+    { id: 4, name: "木蘭潔顏胺基酸慕斯 150ml", cat: "face", price: 650, desc: "溫和弱酸性配方，洗後水嫩不緊繃，深層淨化毛孔" },
+    { id: 5, name: "島嶼森林草本沐浴露 300ml", cat: "body", price: 720, desc: "蘊含清新木質香調與草本萃取，溫和潔淨全身肌膚" },
+    { id: 6, name: "天竺葵潤膚身體乳 250ml", cat: "body", price: 920, desc: "絲滑乳液質地，迅速吸收不黏膩，長時間柔嫩保濕" },
+    { id: 7, name: "晨曦島嶼植物香氛精油 15ml", cat: "fragrance", price: 1100, desc: "高純度天然萃取，釋放身心緊繃壓力，舒緩放鬆" },
+    { id: 8, name: "植萃平衡體驗三件組", cat: "starter", price: 680, desc: "含潔顏乳 30ml + 化妝水 50ml + 精華液 10ml" }
+];
+
+// 從 LocalStorage 獲取商品，若無則用預設值 (並過濾掉已下架的商品)
+let rawProducts = JSON.parse(localStorage.getItem('daohua_products')) || defaultProducts;
+const productList = rawProducts.map(p => ({
+    id: p.id,
+    name: p.name,
+    cat: p.category || p.cat,
+    price: p.price,
+    desc: p.desc,
+    status: p.status || 'active'
+})).filter(p => p.status === 'active');
+
+let cart = [];
+let isLoggedIn = false;
+let currentUserAccount = "";
+
+/* 初始化商品清單 */
+function renderProducts(items) {
+    const container = document.getElementById('productsContainer');
+    if (!container) return;
+    if (items.length === 0) {
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #888; padding: 30px;">未找到相關商品</p>';
+        return;
+    }
+    container.innerHTML = items.map(p => `
+        <div class="product-card">
+            <div class="product-thumb">${p.name}</div>
+            <div class="product-name">${p.name}</div>
+            <div class="product-desc">${p.desc}</div>
+            <div class="product-price">NT$ ${p.price.toLocaleString()}</div>
+            <button class="btn-primary" onclick="addToCart('${p.name}', ${p.price})">加入購物車</button>
+        </div>
+    `).join('');
+}
+
+/* 類別篩選 */
+function filterProducts(category, btnElement) {
+    document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+    if (btnElement) btnElement.classList.add('active');
+    
+    if (category === 'all') {
+        renderProducts(productList);
+    } else {
+        const filtered = productList.filter(p => p.cat === category);
+        renderProducts(filtered);
+    }
+}
+
+/* 頁面分頁切換 */
+function navigateTo(pageKey) {
+    document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active-view'));
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    const targetView = document.getElementById('view-' + pageKey);
+    const targetNav = document.getElementById('nav-' + pageKey);
+    if (targetView) targetView.classList.add('active-view');
+    if (targetNav) targetNav.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* 購物車與結帳功能 (連動至後台) */
+function addToCart(title, price) {
+    const existing = cart.find(item => item.name === title);
+    if (existing) existing.qty += 1;
+    else cart.push({ name: title, price: price, qty: 1 });
+    updateCartUI();
+    toggleCartDrawer(true);
+}
+
+function updateCartUI() {
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
+    const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    document.getElementById('topCartBadge').textContent = count;
+    document.getElementById('floatCartBadge').textContent = count;
+    document.getElementById('cartTotalPrice').textContent = 'NT$ ' + total.toLocaleString();
+
+    const container = document.getElementById('cartItemsContainer');
+    if (cart.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #999; margin-top: 40px;">購物車內目前沒有商品</p>';
+        return;
+    }
+    container.innerHTML = cart.map((item, index) => `
+        <div class="cart-item-row">
+            <div>
+                <div style="font-weight: 600; font-size: 14px;">${item.name}</div>
+                <div style="color: var(--primary-color); font-size: 13px;">NT$ ${item.price.toLocaleString()} x ${item.qty}</div>
+            </div>
+            <button class="btn-secondary" style="padding: 2px 8px; font-size: 12px;" onclick="removeFromCart(${index})">刪除</button>
+        </div>
+    `).join('');
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCartUI();
+}
+
+function toggleCartDrawer(open) {
+    const drawer = document.getElementById('cartDrawer');
+    const overlay = document.getElementById('cartOverlay');
+    if (open) {
+        drawer.classList.add('open');
+        overlay.style.display = 'block';
+    } else {
+        drawer.classList.remove('open');
+        overlay.style.display = 'none';
+    }
+}
+
+function checkout() {
+    if (cart.length === 0) {
+        alert('您的購物車是空的，快去挑選植萃好物吧！');
+        return;
+    }
+    
+    // 計算總金額並組合購買項目
+    const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const itemsStr = cart.map(c => `${c.name} x${c.qty}`).join(', ');
+    
+    // 建立新訂單
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const newOrder = {
+        id: Date.now(),
+        orderNo: "ORD-" + now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0') + "-" + Math.floor(100 + Math.random() * 900),
+        customer: isLoggedIn ? currentUserAccount : "官網訪客 (未登入)",
+        phone: "待客戶提供",
+        items: itemsStr,
+        total: total,
+        payment: "信用卡/行動支付",
+        status: "pending",
+        tracking: "",
+        date: dateStr
+    };
+
+    // 儲存訂單到 LocalStorage，讓後台抓取
+    let savedOrders = JSON.parse(localStorage.getItem('daohua_orders')) || [];
+    savedOrders.unshift(newOrder);
+    localStorage.setItem('daohua_orders', JSON.stringify(savedOrders));
+
+    alert(`感謝您的訂購！訂單編號 ${newOrder.orderNo} 已成立。\n主管已可於後台看見此筆訂單，我們將盡速為您出貨！`);
+    cart = [];
+    updateCartUI();
+    toggleCartDrawer(false);
+}
+
+/* 搜尋功能 */
+function executeSearch() {
+    const query = document.getElementById('searchInput').value.trim();
+    if (!query) return;
+    navigateTo('products');
+    const results = productList.filter(p => p.name.includes(query) || p.desc.includes(query));
+    renderProducts(results);
+}
+function handleSearch(e) { if (e.key === 'Enter') executeSearch(); }
+
+/* 登入彈窗 */
+function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
+function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
+function handleLogin(e) {
+    e.preventDefault();
+    currentUserAccount = document.getElementById('loginAccount').value;
+    isLoggedIn = true;
+    document.getElementById('userStatusText').textContent = currentUserAccount.split('@')[0] + ' (已登入)';
+    closeLoginModal();
+    alert('登入成功！歡迎回到島花解語。');
+}
+
+/* 其他小功能 */
+function copyCouponCode(code) {
+    navigator.clipboard.writeText(code).then(() => alert('折扣碼 ' + code + ' 已複製！')).catch(() => alert('折扣碼為：' + code));
+}
+function handleContactSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById('contactName').value;
+    alert(`感謝 ${name} 的留言！專員將盡速聯繫您。`);
+    e.target.reset();
+}
+function toggleAiChat() {
+    const chatWin = document.getElementById('aiChatWindow');
+    chatWin.style.display = chatWin.style.display === 'flex' ? 'none' : 'flex';
+    if (chatWin.style.display === 'flex') document.getElementById('aiInput').focus();
+}
+function handleAiEnter(e) { if (e.key === 'Enter') sendAiMessage(); }
+function sendAiMessage() {
+    const input = document.getElementById('aiInput');
+    const text = input.value.trim();
+    if (!text) return;
+    const chatBody = document.getElementById('chatBody');
+    chatBody.innerHTML += `<div class="chat-msg msg-user">${text}</div>`;
+    input.value = '';
+    chatBody.scrollTop = chatBody.scrollHeight;
+    setTimeout(() => {
+        chatBody.innerHTML += `<div class="chat-msg msg-ai">感謝提問！請撥打客服專線 0976943100 由專人協助您喔！🌸</div>`;
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }, 600);
+}
+function openLineService() { alert('即將為您導向 LINE 官方客服！'); }
+
+// 預設載入商品列表
+window.addEventListener('DOMContentLoaded', () => {
+    renderProducts(productList);
+    
+    // 監聽 LocalStorage 變化 (若同瀏覽器跨分頁更新後台，前台自動刷新)
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'daohua_products') {
+            location.reload();
+        }
+    });
+});

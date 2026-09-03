@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>島花解語 | 智慧營運後台管理系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#f4f6f2', 100: '#e5eadf', 500: '#6e7960', 600: '#5c674e', 700: '#4a543e', 800: '#3a4231' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap');
+        * { font-family: 'Noto Sans TC', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 9999px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col">
+
+<!-- 登入介面 -->
+<div id="loginSection" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 border border-gray-100 relative">
+        <div class="text-center mb-6">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-50 text-brand-600 mb-3 text-2xl font-bold border border-brand-100 shadow-inner">🌸</div>
+            <h1 class="text-2xl font-bold text-gray-800 tracking-wide">島花解語 後台管理系統</h1>
+            <p class="text-xs text-gray-500 mt-1">智慧營運・庫存倉儲・出貨履歷管理</p>
+        </div>
+        <form id="adminLoginForm" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">登入身分別</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" id="roleManagerBtn" onclick="selectRole('manager')" class="py-2 text-sm font-medium rounded-lg border-2 border-brand-500 bg-brand-50 text-brand-700 transition">主管登入</button>
+                    <button type="button" id="roleStaffBtn" onclick="selectRole('staff')" class="py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition">一般員工</button>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">管理者帳號</label>
+                <input type="text" id="loginUsername" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-500" placeholder="請輸入工作帳號">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">通關密碼</label>
+                <input type="password" id="loginPassword" required class="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-500" placeholder="請輸入密碼">
+            </div>
+            <div id="loginFeedback" class="hidden text-xs p-2.5 rounded-lg bg-red-50 text-red-600 border border-red-200"></div>
+            <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-medium text-sm rounded-lg shadow-md hover:shadow-lg transition">驗證身分並登入系統</button>
+        </form>
+        <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
+            <span>預設主帳號：<strong class="text-gray-600">ygc96321</strong></span>
+            <span>預設密碼：<strong class="text-gray-600">asdf6543</strong></span>
+        </div>
+    </div>
+</div>
+
+<!-- 主畫面 -->
+<div id="appContainer" class="hidden flex-1 flex flex-col min-h-screen">
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="index.html" target="_blank" class="flex items-center space-x-2 group">
+                    <span class="text-2xl group-hover:scale-110 transition">🌸</span>
+                    <div>
+                        <span class="font-bold text-gray-800 text-lg leading-tight block">島花解語</span>
+                        <span class="text-[10px] text-brand-600 tracking-wider font-semibold block uppercase">Operations Console</span>
+                    </div>
+                </a>
+                <span class="h-5 w-px bg-gray-200"></span>
+                <a href="index.html" target="_blank" class="inline-flex items-center text-xs text-gray-500 hover:text-brand-600 bg-gray-100 hover:bg-brand-50 px-2.5 py-1 rounded-md transition">🌐 前往前台首頁</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 bg-brand-50 px-3 py-1.5 rounded-full border border-brand-100">
+                    <span id="roleBadge" class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                    <span id="userGreeting" class="text-xs font-semibold text-brand-700">主管 (ygc96321)</span>
+                </div>
+                <button onclick="handleLogout()" class="text-xs text-gray-500 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition">🚪 安全登出</button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 sm:space-x-8 overflow-x-auto custom-scrollbar">
+            <button onclick="switchTab('dashboard')" id="tabBtn-dashboard" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-brand-500 text-brand-600 flex items-center space-x-2"><span>📊</span><span>營運總覽</span></button>
+            <button onclick="switchTab('products')" id="tabBtn-products" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 flex items-center space-x-2"><span>🌿</span><span>商品管理 & 上架</span></button>
+            <button onclick="switchTab('inventory')" id="tabBtn-inventory" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 flex items-center space-x-2">
+                <span>📦</span><span>庫存監控與補貨</span>
+                <span id="inventoryAlertBadge" class="hidden px-1.5 py-0.5 text-[10px] rounded-full bg-red-500 text-white font-bold">0</span>
+            </button>
+            <button onclick="switchTab('orders')" id="tabBtn-orders" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 flex items-center space-x-2"><span>🚚</span><span>訂單與安排出貨</span></button>
+            <button onclick="switchTab('staff')" id="tabBtn-staff" class="tab-btn py-3.5 px-3 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 flex items-center space-x-2"><span>👥</span><span>人員紀錄</span></button>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+        <!-- Dashboard -->
+        <section id="tab-dashboard" class="tab-pane space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex justify-between">
+                    <div><p class="text-xs text-gray-400 font-medium">總營業額</p><h3 class="text-2xl font-bold text-gray-800 mt-1" id="kpiRevenue">NT$ 0</h3></div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">💰</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex justify-between">
+                    <div><p class="text-xs text-gray-400 font-medium">待安排出貨</p><h3 class="text-2xl font-bold text-gray-800 mt-1" id="kpiPendingOrders">0 筆</h3></div>
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">📦</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex justify-between">
+                    <div><p class="text-xs text-gray-400 font-medium">全站商品品項</p><h3 class="text-2xl font-bold text-gray-800 mt-1" id="kpiProductCount">0 款</h3></div>
+                    <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-xl">🌿</div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex justify-between">
+                    <div><p class="text-xs text-gray-400 font-medium">庫存警戒提醒</p><h3 class="text-2xl font-bold text-red-600 mt-1" id="kpiLowStock">0 項</h3></div>
+                    <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xl">⚠️</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products -->
+        <section id="tab-products" class="tab-pane hidden space-y-6">
+            <div class="flex justify-between gap-4">
+                <h2 class="text-xl font-bold text-gray-800">商品資料與上架管理</h2>
+                <div class="flex space-x-3">
+                    <input type="text" id="productSearchInput" oninput="renderProductsTable()" placeholder="搜尋商品..." class="px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-brand-500">
+                    <button onclick="openProductModal()" class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-medium text-xs rounded-lg shadow-sm">＋ 新增商品</button>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-gray-50 border-b border-gray-200 text-gray-600 uppercase font-semibold">
+                        <tr><th class="p-3.5">商品圖</th><th class="p-3.5">名稱與描述</th><th class="p-3.5">分類</th><th class="p-3.5">售價</th><th class="p-3.5">庫存</th><th class="p-3.5">狀態</th><th class="p-3.5 text-right">操作</th></tr>
+                    </thead>
+                    <tbody id="productsTableBody" class="divide-y divide-gray-100"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Inventory -->
+        <section id="tab-inventory" class="tab-pane hidden space-y-6">
+            <div class="flex justify-between">
+                <h2 class="text-xl font-bold text-gray-800">倉儲存量監控與一鍵補貨</h2>
+                <button onclick="quickRestockAll()" class="px-3.5 py-2 bg-emerald-600 text-white font-medium text-xs rounded-lg shadow-sm">⚡ 全部低庫存一鍵補足 (+30)</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="inventoryCardsContainer"></div>
+        </section>
+
+        <!-- Orders -->
+        <section id="tab-orders" class="tab-pane hidden space-y-6">
+            <div class="flex justify-between">
+                <h2 class="text-xl font-bold text-gray-800">訂單履歷與安排出貨</h2>
+                <div class="space-x-2">
+                    <button onclick="filterOrders('all')" class="order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-brand-500 text-white">全部</button>
+                    <button onclick="filterOrders('pending')" class="order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-600">待出貨</button>
+                    <button onclick="filterOrders('shipped')" class="order-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-600">已出貨</button>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-gray-50 border-b border-gray-200 text-gray-600 uppercase font-semibold">
+                        <tr><th class="p-3.5">單號</th><th class="p-3.5">客戶</th><th class="p-3.5">內容</th><th class="p-3.5">金額</th><th class="p-3.5">狀態</th><th class="p-3.5">物流碼</th><th class="p-3.5 text-right">動作</th></tr>
+                    </thead>
+                    <tbody id="ordersTableBody" class="divide-y divide-gray-100"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Staff -->
+        <section id="tab-staff" class="tab-pane hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                <div class="flex justify-between"><h3 class="font-bold text-gray-800 text-base">操作紀錄 (Audit Trail)</h3><button onclick="clearAuditLogs()" class="text-xs text-gray-400">清空紀錄</button></div>
+                <div class="h-80 overflow-y-auto custom-scrollbar border border-gray-100 rounded-lg p-3 bg-gray-50 font-mono text-[11px] space-y-2" id="auditLogsContainer"></div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Modal 區塊略縮寫結構保持功能一致 -->
+<!-- Product Modal -->
+<div id="productModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden">
+        <div class="px-6 py-4 bg-brand-50 border-b border-brand-100 flex justify-between"><h3 id="productModalTitle" class="font-bold text-brand-700">新增商品資料</h3><button onclick="closeProductModal()" class="text-gray-400 font-bold">&times;</button></div>
+        <form id="productForm" onsubmit="handleProductFormSubmit(event)" class="p-6 space-y-4 text-xs">
+            <input type="hidden" id="editProductId">
+            <label class="block font-semibold">商品名稱 *<input type="text" id="prodName" required class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"></label>
+            <div class="grid grid-cols-2 gap-4">
+                <label class="block font-semibold">分類 *<select id="prodCategory" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"><option value="face">面部保養</option><option value="body">身體護理</option><option value="fragrance">植物香氛</option><option value="starter">體驗組合</option></select></label>
+                <label class="block font-semibold">定價 *<input type="number" id="prodPrice" required min="1" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"></label>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <label class="block font-semibold">初始庫存量 *<input type="number" id="prodStock" required min="0" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"></label>
+                <label class="block font-semibold">狀態<select id="prodStatus" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"><option value="active">正常銷售中</option><option value="draft">暫時下架</option></select></label>
+            </div>
+            <label class="block font-semibold">商品圖片URL<input type="text" id="prodImage" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none" placeholder="輸入圖片 URL (如 6.png)"></label>
+            <label class="block font-semibold">描述<textarea id="prodDesc" rows="2" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"></textarea></label>
+            <div class="flex justify-end space-x-3 pt-3"><button type="button" onclick="closeProductModal()" class="px-4 py-2 bg-gray-100 rounded-lg">取消</button><button type="submit" class="px-5 py-2 bg-brand-500 text-white rounded-lg">儲存</button></div>
+        </form>
+    </div>
+</div>
+
+<!-- Shipping Modal -->
+<div id="shippingModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden">
+        <div class="px-6 py-4 bg-emerald-50 border-b border-emerald-100 flex justify-between"><h3 class="font-bold text-emerald-800">安排出貨</h3><button onclick="closeShippingModal()" class="text-gray-400 font-bold">&times;</button></div>
+        <form id="shippingForm" onsubmit="handleShippingSubmit(event)" class="p-6 space-y-4 text-xs">
+            <input type="hidden" id="shipOrderId">
+            <div><span class="text-gray-400 block">處理訂單：</span><span class="text-sm font-bold" id="shipOrderNoDisplay"></span></div>
+            <label class="block font-semibold">物流配送方式<select id="shipCarrier" class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"><option value="黑貓宅急便">黑貓宅急便</option><option value="超商取貨">超商取貨</option></select></label>
+            <label class="block font-semibold">物流單號<input type="text" id="shipTrackingNumber" required class="w-full mt-1 px-3 py-2 border rounded-lg outline-none"></label>
+            <div class="flex justify-end space-x-3 pt-3"><button type="button" onclick="closeShippingModal()" class="px-4 py-2 bg-gray-100 rounded-lg">返回</button><button type="submit" class="px-5 py-2 bg-emerald-600 text-white rounded-lg">完成出貨</button></div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 預設資料庫
+    const defaultProducts = [
+        { id: 1, name: "野花修護舒緩精華 30ml", category: "face", price: 1280, stock: 45, status: "active", image: "6.png", desc: "島嶼高活性花萃，改善敏感泛紅，穩定肌底屏障" },
+        { id: 2, name: "島嶼露水保濕噴霧 150ml", category: "face", price: 880, stock: 8, status: "active", image: "6.png", desc: "細緻微米水分子，隨時補水保濕" }
+    ];
+    const defaultOrders = [
+        { id: 101, orderNo: "ORD-20260901-01", customer: "王小美", phone: "0912-345678", items: "野花修護舒緩精華 30ml x1", total: 1280, payment: "LINE Pay", status: "pending", tracking: "", date: "2026-09-01 10:20" }
+    ];
+
+    // 初始化與連動 LocalStorage
+    let products = JSON.parse(localStorage.getItem('daohua_products')) || defaultProducts;
+    let orders = JSON.parse(localStorage.getItem('daohua_orders')) || defaultOrders;
+    let auditLogs = JSON.parse(localStorage.getItem('daohua_logs')) || [`[系統啟動] 島花解語管理後台初始化就緒。`];
+    
+    // 將預設寫入確保存有資料
+    if(!localStorage.getItem('daohua_products')) localStorage.setItem('daohua_products', JSON.stringify(products));
+    if(!localStorage.getItem('daohua_orders')) localStorage.setItem('daohua_orders', JSON.stringify(orders));
+
+    function saveData() {
+        localStorage.setItem('daohua_products', JSON.stringify(products));
+        localStorage.setItem('daohua_orders', JSON.stringify(orders));
+        localStorage.setItem('daohua_logs', JSON.stringify(auditLogs));
+    }
+
+    let currentUser = null;
+    let currentRoleSelection = 'manager';
+
+    function selectRole(role) {
+        currentRoleSelection = role;
+        document.getElementById('roleManagerBtn').className = role === 'manager' ? 'py-2 text-sm font-medium rounded-lg border-2 border-brand-500 bg-brand-50 text-brand-700' : 'py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50';
+        document.getElementById('roleStaffBtn').className = role === 'staff' ? 'py-2 text-sm font-medium rounded-lg border-2 border-brand-500 bg-brand-50 text-brand-700' : 'py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50';
+    }
+
+    function handleLoginSubmit(event) {
+        event.preventDefault();
+        const u = document.getElementById('loginUsername').value.trim();
+        const p = document.getElementById('loginPassword').value.trim();
+        if (u === 'ygc96321' && p === 'asdf6543') {
+            currentUser = { username: u, role: currentRoleSelection, roleName: currentRoleSelection === 'manager' ? '主管' : '員工' };
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('appContainer').classList.remove('hidden');
+            document.getElementById('userGreeting').textContent = `${currentUser.roleName} (${currentUser.username})`;
+            logAudit(`使用者 [${currentUser.username}] 登入後台。`);
+            refreshAllViews();
+        } else {
+            document.getElementById('loginFeedback').textContent = '帳號或密碼錯誤！';
+            document.getElementById('loginFeedback').classList.remove('hidden');
+        }
+    }
+
+    function handleLogout() {
+        logAudit(`使用者 [${currentUser?.username}] 登出系統。`);
+        document.getElementById('appContainer').classList.add('hidden');
+        document.getElementById('loginSection').classList.remove('hidden');
+    }
+
+    function switchTab(tabKey) {
+        document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.replace('border-brand-500', 'border-transparent'));
+        document.getElementById('tab-' + tabKey).classList.remove('hidden');
+        document.getElementById('tabBtn-' + tabKey).classList.replace('border-transparent', 'border-brand-500');
+    }
+
+    function renderDashboardKPI() {
+        const lowStock = products.filter(p => p.stock < 15).length;
+        const pending = orders.filter(o => o.status === 'pending').length;
+        const rev = orders.reduce((sum, o) => sum + o.total, 0);
+        document.getElementById('kpiLowStock').textContent = `${lowStock} 項`;
+        document.getElementById('kpiPendingOrders').textContent = `${pending} 筆`;
+        document.getElementById('kpiProductCount').textContent = `${products.length} 款`;
+        document.getElementById('kpiRevenue').textContent = `NT$ ${rev.toLocaleString()}`;
+    }
+
+    function renderProductsTable() {
+        const tbody = document.getElementById('productsTableBody');
+        const q = (document.getElementById('productSearchInput')?.value || '').toLowerCase();
+        tbody.innerHTML = products.filter(p => p.name.toLowerCase().includes(q)).map(p => `
+            <tr class="hover:bg-gray-50 border-b border-gray-100">
+                <td class="p-3.5"><img src="${p.image}" class="w-10 h-10 object-cover rounded border" onerror="this.src='https://placehold.co/100x100'"></td>
+                <td class="p-3.5 font-bold">${p.name}</td>
+                <td class="p-3.5">${p.category}</td>
+                <td class="p-3.5 font-mono text-brand-600">NT$ ${p.price}</td>
+                <td class="p-3.5 font-mono ${p.stock<15?'text-red-500 font-bold':''}">${p.stock}</td>
+                <td class="p-3.5">${p.status === 'active' ? '銷售中' : '下架'}</td>
+                <td class="p-3.5 text-right space-x-2"><button onclick="editProduct(${p.id})" class="text-blue-500">編輯</button><button onclick="deleteProduct(${p.id})" class="text-red-500">刪除</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function openProductModal() {
+        document.getElementById('productForm').reset();
+        document.getElementById('editProductId').value = '';
+        document.getElementById('productModal').classList.remove('hidden');
+    }
+    function closeProductModal() { document.getElementById('productModal').classList.add('hidden'); }
+
+    function handleProductFormSubmit(e) {
+        e.preventDefault();
+        const editId = document.getElementById('editProductId').value;
+        const data = {
+            id: editId ? Number(editId) : Date.now(),
+            name: document.getElementById('prodName').value,
+            category: document.getElementById('prodCategory').value,
+            price: Number(document.getElementById('prodPrice').value),
+            stock: Number(document.getElementById('prodStock').value),
+            status: document.getElementById('prodStatus').value,
+            image: document.getElementById('prodImage').value || '6.png',
+            desc: document.getElementById('prodDesc').value
+        };
+        if (editId) {
+            const idx = products.findIndex(p => p.id === data.id);
+            products[idx] = data;
+            logAudit(`修改商品：${data.name}`);
+        } else {
+            products.unshift(data);
+            logAudit(`新增商品：${data.name}`);
+        }
+        saveData(); // 儲存至 LocalStorage 同步給前台
+        closeProductModal();
+        refreshAllViews();
+    }
+
+    function editProduct(id) {
+        const p = products.find(x => x.id === id);
+        document.getElementById('editProductId').value = p.id;
+        document.getElementById('prodName').value = p.name;
+        document.getElementById('prodCategory').value = p.category;
+        document.getElementById('prodPrice').value = p.price;
+        document.getElementById('prodStock').value = p.stock;
+        document.getElementById('prodStatus').value = p.status;
+        document.getElementById('prodImage').value = p.image;
+        document.getElementById('prodDesc').value = p.desc;
+        document.getElementById('productModal').classList.remove('hidden');
+    }
+
+    function deleteProduct(id) {
+        if(confirm('確定刪除此商品？')) {
+            products = products.filter(p => p.id !== id);
+            logAudit(`刪除商品 ID: ${id}`);
+            saveData();
+            refreshAllViews();
+        }
+    }
+
+    function renderInventoryCards() {
+        document.getElementById('inventoryCardsContainer').innerHTML = products.map(p => `
+            <div class="bg-white p-5 rounded-xl border ${p.stock<15?'border-red-300':'border-gray-200'} flex flex-col justify-between">
+                <div><h4 class="font-bold mb-2">${p.name}</h4><div class="text-3xl font-mono ${p.stock<15?'text-red-500':''}">${p.stock} 件</div></div>
+                <div class="pt-3 border-t mt-3 flex justify-between">
+                    <button onclick="adjustStock(${p.id}, -1)" class="px-2 bg-gray-100 rounded">-1</button>
+                    <button onclick="adjustStock(${p.id}, 1)" class="px-2 bg-gray-100 rounded">+1</button>
+                    <button onclick="adjustStock(${p.id}, 10)" class="px-3 py-1 bg-brand-50 text-brand-600 rounded text-xs font-bold">補貨+10</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function adjustStock(id, delta) {
+        const p = products.find(x => x.id === id);
+        p.stock = Math.max(0, p.stock + delta);
+        logAudit(`商品 [${p.name}] 庫存異動：${delta} (目前 ${p.stock})`);
+        saveData();
+        refreshAllViews();
+    }
+    
+    function quickRestockAll() {
+        products.forEach(p => { if(p.stock < 15) p.stock += 30; });
+        logAudit(`一鍵補貨完成`);
+        saveData();
+        refreshAllViews();
+    }
+
+    let orderFilter = 'all';
+    function filterOrders(status) { orderFilter = status; renderOrdersTable(); }
+
+    function renderOrdersTable() {
+        // 即時從 LocalStorage 拉取最新訂單(前台可能有新訂單)
+        orders = JSON.parse(localStorage.getItem('daohua_orders')) || orders;
+        const tbody = document.getElementById('ordersTableBody');
+        const list = orderFilter === 'all' ? orders : orders.filter(o => o.status === orderFilter);
+        tbody.innerHTML = list.map(o => `
+            <tr class="hover:bg-gray-50 border-b border-gray-100">
+                <td class="p-3.5 font-mono">${o.orderNo}</td>
+                <td class="p-3.5 font-bold">${o.customer}</td>
+                <td class="p-3.5 text-[11px] text-gray-500 max-w-[150px] truncate">${o.items}</td>
+                <td class="p-3.5 font-mono">NT$ ${o.total}</td>
+                <td class="p-3.5"><span class="px-2 py-1 rounded text-[10px] ${o.status==='pending'?'bg-amber-100 text-amber-700':'bg-emerald-100 text-emerald-700'}">${o.status==='pending'?'待出貨':'已出貨'}</span></td>
+                <td class="p-3.5 font-mono text-gray-500">${o.tracking || '-'}</td>
+                <td class="p-3.5 text-right">${o.status === 'pending' ? `<button onclick="openShippingModal(${o.id})" class="px-3 py-1 bg-brand-500 text-white rounded text-xs">出貨</button>` : '-'}</td>
+            </tr>
+        `).join('');
+    }
+
+    function openShippingModal(id) {
+        const o = orders.find(x => x.id === id);
+        document.getElementById('shipOrderId').value = o.id;
+        document.getElementById('shipOrderNoDisplay').textContent = o.orderNo;
+        document.getElementById('shipTrackingNumber').value = 'TW-' + Math.floor(10000000 + Math.random() * 90000000);
+        document.getElementById('shippingModal').classList.remove('hidden');
+    }
+    function closeShippingModal() { document.getElementById('shippingModal').classList.add('hidden'); }
+
+    function handleShippingSubmit(e) {
+        e.preventDefault();
+        const id = Number(document.getElementById('shipOrderId').value);
+        const tracking = document.getElementById('shipTrackingNumber').value;
+        const o = orders.find(x => x.id === id);
+        if (o) {
+            o.status = 'shipped';
+            o.tracking = tracking;
+            logAudit(`訂單 [${o.orderNo}] 已發貨，單號: ${tracking}`);
+            saveData();
+            closeShippingModal();
+            refreshAllViews();
+        }
+    }
+
+    function logAudit(msg) {
+        const time = new Date().toLocaleTimeString();
+        auditLogs.unshift(`[${time}] ${msg}`);
+        saveData();
+        renderAuditLogs();
+    }
+
+    function renderAuditLogs() {
+        document.getElementById('auditLogsContainer').innerHTML = auditLogs.map(l => `<div class="pb-1 border-b border-gray-100 text-gray-600">${l}</div>`).join('');
+    }
+    function clearAuditLogs() { auditLogs = ['[清空] 日誌已重置。']; saveData(); renderAuditLogs(); }
+
+    function refreshAllViews() {
+        renderDashboardKPI();
+        renderProductsTable();
+        renderInventoryCards();
+        renderOrdersTable();
+        renderAuditLogs();
+    }
+
+    window.addEventListener('DOMContentLoaded', refreshAllViews);
+    
+    // 監聽前台是否有新訂單存入 LocalStorage
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'daohua_orders') {
+            orders = JSON.parse(e.newValue);
+            refreshAllViews(); // 自動更新後台訂單畫面
+        }
+    });
+</script>
+</body>
+</html>
