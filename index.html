@@ -1,1699 +1,222 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>島花解語 | 現代植萃保養官方網站</title>
-    <style>
-        :root {
-            --primary-color: #6e7960; /* 橄欖綠品牌色 */
-            --primary-hover: #57624a;
-            --primary-light: #f0f3eb;
-            --primary-tag: #859174;
-            --bg-color: #fafafa;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --text-muted: #666666;
-            --light-gray: #e6e6e6;
-            --border-color: #eaeaea;
-            --footer-bg: #6e7960;
-            --line-green: #00C300;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        button {
-            font-family: inherit;
-        }
-
-        /* 頂部功能條 Top Bar */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 50px;
-            background: #ffffff;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 14px;
-        }
-
-        .search-box {
-            display: flex;
-            align-items: center;
-            border-bottom: 1.5px solid var(--primary-color);
-            padding: 2px 4px;
-            width: 240px;
-        }
-
-        .search-box input {
-            border: none;
-            outline: none;
-            font-size: 13px;
-            background: transparent;
-            width: 100%;
-            color: #333;
-        }
-
-        .search-box button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--primary-color);
-            font-size: 14px;
-            padding-left: 6px;
-        }
-
-        .top-actions {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-
-        .top-action-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            color: #4a5738;
-            font-weight: 500;
-            transition: color 0.2s;
-            user-select: none;
-        }
-
-        .top-action-item:hover {
-            color: var(--primary-hover);
-        }
-
-        .cart-count-badge {
-            background: var(--primary-color);
-            color: #fff;
-            border-radius: 50%;
-            padding: 2px 7px;
-            font-size: 11px;
-            font-weight: bold;
-            display: inline-block;
-            line-height: 1.2;
-        }
-
-        /* 主導航 Navbar */
-        header.navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 50px;
-            background-color: #ffffff;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-        }
-
-        /* 附件二品牌 Logo 專屬樣式 */
-        .brand-logo-link {
-            display: inline-flex;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-            transition: opacity 0.2s, transform 0.2s;
-        }
-
-        .brand-logo-link:hover {
-            transform: scale(1.03);
-            opacity: 0.95;
-        }
-
-        .nav-brand-img {
-            height: 52px;
-            width: auto;
-            object-fit: contain;
-            display: block;
-        }
-
-        /* 圖片載入失敗時的精緻純字體向量備援 */
-        .brand-fallback-badge {
-            display: none;
-            align-items: center;
-            gap: 6px;
-            color: #bfa15f;
-            font-weight: bold;
-            font-size: 24px;
-            letter-spacing: 2px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 22px;
-        }
-
-        .nav-links a {
-            font-size: 15px;
-            color: #444444;
-            cursor: pointer;
-            transition: color 0.2s, font-weight 0.2s;
-            position: relative;
-            padding: 4px 0;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-
-        .nav-links a.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: var(--primary-color);
-        }
-
-        /* 頁面切換控制 (SPA 結構) */
-        main.main-content {
-            flex: 1;
-        }
-
-        .page-view {
-            display: none;
-            animation: fadeIn 0.3s ease-in-out forwards;
-        }
-
-        .page-view.active-view {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 頁面標題通用橫幅 */
-        .page-header {
-            background: var(--primary-light);
-            padding: 50px 20px;
-            text-align: center;
-        }
-
-        .page-header h1 {
-            color: var(--primary-color);
-            font-size: 32px;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-        }
-
-        .page-header p {
-            color: #555;
-            font-size: 15px;
-            letter-spacing: 1px;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 0 24px;
-        }
-
-        .btn-primary {
-            padding: 12px 28px;
-            background-color: var(--primary-color);
-            color: #ffffff;
-            border: none;
-            border-radius: 4px;
-            font-size: 15px;
-            cursor: pointer;
-            transition: background-color 0.25s, transform 0.15s;
-            display: inline-block;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            padding: 10px 20px;
-            background: #ffffff;
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-secondary:hover {
-            background: var(--primary-color);
-            color: #fff;
-        }
-
-        /* ---------------- 首頁 Home ---------------- */
-        .hero {
-            height: 65vh;
-            background: linear-gradient(rgba(0,0,0,0.32), rgba(0,0,0,0.32)), url('https://images.unsplash.com/photo-1615397323282-315cf77a8335?q=80&w=2000&auto=format&fit=crop') center/cover no-repeat;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #ffffff;
-            text-align: center;
-            padding: 0 20px;
-        }
-
-        .hero h1 {
-            font-size: 42px;
-            letter-spacing: 5px;
-            margin-bottom: 18px;
-            font-weight: 500;
-        }
-
-        .hero p {
-            font-size: 17px;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
-            max-width: 620px;
-            line-height: 1.8;
-            opacity: 0.95;
-        }
-
-        .home-features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 28px;
-            margin: 50px 0;
-        }
-
-        .feature-card {
-            background: #ffffff;
-            padding: 35px 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            text-align: center;
-            border-top: 3px solid var(--primary-color);
-            transition: transform 0.2s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-4px);
-        }
-
-        .feature-card h3 {
-            font-size: 20px;
-            margin-bottom: 12px;
-            color: var(--primary-color);
-        }
-
-        .feature-card p {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        /* ---------------- 新客體驗 New Customer ---------------- */
-        .coupon-box {
-            background: #fff;
-            border: 2px dashed var(--primary-color);
-            border-radius: 12px;
-            padding: 35px;
-            max-width: 520px;
-            margin: 0 auto 50px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-        }
-
-        .coupon-code {
-            font-size: 30px;
-            font-weight: bold;
-            letter-spacing: 4px;
-            color: var(--primary-color);
-            margin: 20px 0;
-            background: var(--primary-light);
-            padding: 12px;
-            border-radius: 6px;
-            user-select: all;
-        }
-
-        /* ---------------- 最新優惠 Promotions ---------------- */
-        .promo-item {
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .promo-tag {
-            background: var(--primary-color);
-            color: #fff;
-            padding: 4px 12px;
-            border-radius: 16px;
-            font-size: 12px;
-            letter-spacing: 1px;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-
-        /* ---------------- 商品分類 Products ---------------- */
-        .category-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 35px;
-            flex-wrap: wrap;
-        }
-
-        .cat-tab {
-            padding: 8px 22px;
-            border: 1px solid var(--primary-color);
-            background: #ffffff;
-            color: var(--primary-color);
-            border-radius: 24px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .cat-tab.active,
-        .cat-tab:hover {
-            background: var(--primary-color);
-            color: #ffffff;
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 25px;
-        }
-
-        .product-card {
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            text-align: center;
-            transition: transform 0.2s;
-        }
-
-        .product-card:hover {
-            transform: translateY(-3px);
-        }
-
-        .product-thumb {
-            width: 100%;
-            height: 200px;
-            background: #f2f4ee;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #7b856f;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .product-name {
-            font-size: 17px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .product-desc {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            height: 38px;
-            overflow: hidden;
-        }
-
-        .product-price {
-            font-size: 16px;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-
-        /* ---------------- 知識專欄 Journal ---------------- */
-        .article-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-        }
-
-        .article-card {
-            background: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .article-thumb {
-            height: 190px;
-            background: #dfe4d7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #5c684e;
-            font-size: 15px;
-        }
-
-        .article-body {
-            padding: 24px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .article-date {
-            font-size: 12px;
-            color: #999;
-            margin-bottom: 6px;
-        }
-
-        .article-title {
-            font-size: 18px;
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .article-summary {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-        }
-
-        /* ---------------- 會員制度 Membership ---------------- */
-        .tier-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .tier-card {
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 30px 24px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            border-top: 4px solid var(--primary-color);
-            text-align: center;
-        }
-
-        .tier-title {
-            font-size: 22px;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 6px;
-        }
-
-        .tier-sub {
-            font-size: 13px;
-            color: #777;
-            margin-bottom: 20px;
-        }
-
-        .tier-list {
-            text-align: left;
-            font-size: 14px;
-            color: #444;
-            padding-left: 20px;
-            line-height: 1.8;
-        }
-
-        /* ---------------- 關於品牌 About ---------------- */
-        .about-wrap {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .about-logo-badge {
-            max-width: 220px;
-            margin: 0 auto 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #ffffff;
-            padding: 24px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(110, 121, 96, 0.1);
-        }
-
-        .about-logo-img {
-            max-width: 170px;
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-        }
-
-        .about-text {
-            font-size: 16px;
-            line-height: 1.9;
-            color: #444;
-            text-align: left;
-            margin-bottom: 24px;
-        }
-
-        /* ---------------- 聯繫我們 Contact ---------------- */
-        .contact-layout {
-            display: flex;
-            gap: 40px;
-            flex-wrap: wrap;
-        }
-
-        .contact-card {
-            flex: 1;
-            min-width: 320px;
-            background: #ffffff;
-            padding: 35px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-        }
-
-        .contact-card h2 {
-            font-size: 22px;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid var(--primary-color);
-            display: inline-block;
-        }
-
-        .contact-field {
-            margin-bottom: 16px;
-            font-size: 15px;
-        }
-
-        .contact-field strong {
-            color: var(--primary-color);
-            display: inline-block;
-            width: 140px;
-        }
-
-        .highlight-phone {
-            color: #c0392b;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--light-gray);
-            border-radius: 4px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            border-color: var(--primary-color);
-        }
-
-        /* 橄欖綠頁尾 Site Footer (附件一規格) */
-        footer.site-footer {
-            background-color: var(--footer-bg);
-            color: #ffffff;
-            padding: 55px 50px 25px;
-            margin-top: 60px;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 40px;
-        }
-
-        .footer-col {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .footer-col a {
-            color: #ffffff;
-            font-size: 14px;
-            opacity: 0.9;
-            transition: opacity 0.2s;
-            cursor: pointer;
-        }
-
-        .footer-col a:hover {
-            opacity: 1;
-            text-decoration: underline;
-        }
-
-        .follow-title {
-            font-weight: bold;
-            font-size: 16px;
-            letter-spacing: 1.5px;
-            margin-bottom: 6px;
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 12px;
-        }
-
-        .social-btn {
-            width: 36px;
-            height: 36px;
-            border: 1px solid rgba(255,255,255,0.85);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 13px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .social-btn:hover {
-            background: rgba(255,255,255,0.25);
-        }
-
-        .line-pay-badge {
-            background: #00B900;
-            color: #fff;
-            font-weight: bold;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            display: inline-block;
-            margin-top: 8px;
-            width: fit-content;
-            letter-spacing: 0.5px;
-        }
-
-        .copyright {
-            text-align: center;
-            margin-top: 45px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            font-size: 13px;
-            opacity: 0.85;
-            letter-spacing: 0.5px;
-        }
-
-        /* 左下角 Messenger / Line 浮點按鈕 */
-        .left-floating-widget {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-        }
-
-        .line-msg-btn {
-            background: var(--line-green);
-            color: #ffffff;
-            padding: 8px 18px;
-            border-radius: 24px;
-            font-size: 14px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.18);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .line-msg-btn:hover {
-            transform: scale(1.05);
-        }
-
-        /* 右下角浮動工具列（置頂、購物車快捷、AI客服） */
-        .right-floating-widget {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .float-circle-btn {
-            width: 50px;
-            height: 50px;
-            background: #ffffff;
-            color: #444444;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.14);
-            cursor: pointer;
-            position: relative;
-            transition: transform 0.2s, background-color 0.2s;
-            user-select: none;
-        }
-
-        .float-circle-btn:hover {
-            transform: scale(1.08);
-        }
-
-        .float-circle-btn.ai-btn {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            font-size: 22px;
-        }
-
-        .float-cart-badge {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            background: var(--primary-color);
-            color: #ffffff;
-            font-size: 11px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        /* AI 專屬客服對話框 */
-        .ai-chat-window {
-            display: none;
-            position: fixed;
-            bottom: 95px;
-            right: 30px;
-            width: 340px;
-            height: 480px;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.18);
-            flex-direction: column;
-            overflow: hidden;
-            z-index: 10000;
-            animation: fadeIn 0.25s ease-out;
-        }
-
-        .chat-header {
-            background: var(--primary-color);
-            color: #ffffff;
-            padding: 15px 18px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .close-btn {
-            cursor: pointer;
-            font-size: 16px;
-            opacity: 0.85;
-        }
-
-        .close-btn:hover {
-            opacity: 1;
-        }
-
-        .chat-body {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background: #f7f8f6;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .chat-msg {
-            padding: 10px 14px;
-            border-radius: 12px;
-            max-width: 82%;
-            font-size: 14px;
-            line-height: 1.5;
-            word-break: break-word;
-        }
-
-        .msg-ai {
-            background: #e5eadf;
-            color: #333;
-            align-self: flex-start;
-            border-bottom-left-radius: 2px;
-        }
-
-        .msg-user {
-            background: var(--primary-color);
-            color: #ffffff;
-            align-self: flex-end;
-            border-bottom-right-radius: 2px;
-        }
-
-        .chat-input-row {
-            display: flex;
-            border-top: 1px solid var(--light-gray);
-            background: #ffffff;
-        }
-
-        .chat-input-row input {
-            flex: 1;
-            padding: 12px 15px;
-            border: none;
-            outline: none;
-            font-size: 14px;
-        }
-
-        .chat-input-row button {
-            padding: 0 18px;
-            background: transparent;
-            border: none;
-            color: var(--primary-color);
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* 購物車側滑抽屜 */
-        .cart-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 10001;
-        }
-
-        .cart-drawer {
-            position: fixed;
-            top: 0;
-            right: -380px;
-            width: 360px;
-            height: 100%;
-            background: #ffffff;
-            box-shadow: -4px 0 20px rgba(0,0,0,0.15);
-            z-index: 10002;
-            transition: right 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .cart-drawer.open {
-            right: 0;
-        }
-
-        .cart-header {
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cart-items-container {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .cart-item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f3f3f3;
-        }
-
-        .cart-footer {
-            padding: 20px;
-            border-top: 1px solid #eee;
-            background: #fdfdfd;
-        }
-
-        .cart-total-row {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            font-size: 18px;
-            margin-bottom: 16px;
-            color: var(--primary-color);
-        }
-
-        /* 登入彈窗 Modal */
-        .login-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.45);
-            z-index: 10003;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .login-dialog {
-            background: #fff;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 400px;
-            padding: 30px;
-            position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        .login-dialog h3 {
-            font-size: 22px;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        /* 響應式佈局 */
-        @media (max-width: 860px) {
-            .top-bar {
-                padding: 10px 20px;
-                flex-direction: column;
-                gap: 10px;
-            }
-            header.navbar {
-                flex-direction: column;
-                gap: 15px;
-                padding: 15px 20px;
-            }
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 14px;
-            }
-            .hero h1 { font-size: 32px; }
-            footer.site-footer { padding: 40px 20px; }
-            .cart-drawer { width: 300px; }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- 頂部功能列 Top Bar -->
-    <div class="top-bar">
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="關鍵字搜尋（如：精華液、慕斯）" onkeypress="handleSearch(event)">
-            <button onclick="executeSearch()">🔍</button>
+/* ----------------------------------------------------
+   前台：商品資料庫 (優先讀取後台儲存的資料)
+---------------------------------------------------- */
+const defaultProducts = [
+    { id: 1, name: "野花修護舒緩精華 30ml", cat: "face", price: 1280, desc: "島嶼高活性花萃，改善敏感泛紅，穩定肌底屏障" },
+    { id: 2, name: "島嶼露水保濕噴霧 150ml", cat: "face", price: 880, desc: "細緻微米水分子，隨時補水保濕，調節水油平衡" },
+    { id: 3, name: "海桐花抗痕鎖水霜 50g", cat: "face", price: 1580, desc: "深層潤澤鎖水，輕盈不油膩，撫平細紋彈潤肌膚" },
+    { id: 4, name: "木蘭潔顏胺基酸慕斯 150ml", cat: "face", price: 650, desc: "溫和弱酸性配方，洗後水嫩不緊繃，深層淨化毛孔" },
+    { id: 5, name: "島嶼森林草本沐浴露 300ml", cat: "body", price: 720, desc: "蘊含清新木質香調與草本萃取，溫和潔淨全身肌膚" },
+    { id: 6, name: "天竺葵潤膚身體乳 250ml", cat: "body", price: 920, desc: "絲滑乳液質地，迅速吸收不黏膩，長時間柔嫩保濕" },
+    { id: 7, name: "晨曦島嶼植物香氛精油 15ml", cat: "fragrance", price: 1100, desc: "高純度天然萃取，釋放身心緊繃壓力，舒緩放鬆" },
+    { id: 8, name: "植萃平衡體驗三件組", cat: "starter", price: 680, desc: "含潔顏乳 30ml + 化妝水 50ml + 精華液 10ml" }
+];
+
+// 從 LocalStorage 獲取商品，若無則用預設值 (並過濾掉已下架的商品)
+let rawProducts = JSON.parse(localStorage.getItem('daohua_products')) || defaultProducts;
+const productList = rawProducts.map(p => ({
+    id: p.id,
+    name: p.name,
+    cat: p.category || p.cat,
+    price: p.price,
+    desc: p.desc,
+    status: p.status || 'active'
+})).filter(p => p.status === 'active');
+
+let cart = [];
+let isLoggedIn = false;
+let currentUserAccount = "";
+
+/* 初始化商品清單 */
+function renderProducts(items) {
+    const container = document.getElementById('productsContainer');
+    if (!container) return;
+    if (items.length === 0) {
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #888; padding: 30px;">未找到相關商品</p>';
+        return;
+    }
+    container.innerHTML = items.map(p => `
+        <div class="product-card">
+            <div class="product-thumb">${p.name}</div>
+            <div class="product-name">${p.name}</div>
+            <div class="product-desc">${p.desc}</div>
+            <div class="product-price">NT$ ${p.price.toLocaleString()}</div>
+            <button class="btn-primary" onclick="addToCart('${p.name}', ${p.price})">加入購物車</button>
         </div>
-        <div class="top-actions">
-            <div class="top-action-item" onclick="openLoginModal()">
-                <span>👤</span> <span id="userStatusText">登入/註冊</span>
+    `).join('');
+}
+
+/* 類別篩選 */
+function filterProducts(category, btnElement) {
+    document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+    if (btnElement) btnElement.classList.add('active');
+    
+    if (category === 'all') {
+        renderProducts(productList);
+    } else {
+        const filtered = productList.filter(p => p.cat === category);
+        renderProducts(filtered);
+    }
+}
+
+/* 頁面分頁切換 */
+function navigateTo(pageKey) {
+    document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active-view'));
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    const targetView = document.getElementById('view-' + pageKey);
+    const targetNav = document.getElementById('nav-' + pageKey);
+    if (targetView) targetView.classList.add('active-view');
+    if (targetNav) targetNav.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* 購物車與結帳功能 (連動至後台) */
+function addToCart(title, price) {
+    const existing = cart.find(item => item.name === title);
+    if (existing) existing.qty += 1;
+    else cart.push({ name: title, price: price, qty: 1 });
+    updateCartUI();
+    toggleCartDrawer(true);
+}
+
+function updateCartUI() {
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
+    const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    document.getElementById('topCartBadge').textContent = count;
+    document.getElementById('floatCartBadge').textContent = count;
+    document.getElementById('cartTotalPrice').textContent = 'NT$ ' + total.toLocaleString();
+
+    const container = document.getElementById('cartItemsContainer');
+    if (cart.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #999; margin-top: 40px;">購物車內目前沒有商品</p>';
+        return;
+    }
+    container.innerHTML = cart.map((item, index) => `
+        <div class="cart-item-row">
+            <div>
+                <div style="font-weight: 600; font-size: 14px;">${item.name}</div>
+                <div style="color: var(--primary-color); font-size: 13px;">NT$ ${item.price.toLocaleString()} x ${item.qty}</div>
             </div>
-            <div class="top-action-item" onclick="toggleCartDrawer(true)">
-                <span>🛒</span> 購物車 <span class="cart-count-badge" id="topCartBadge">0</span>
-            </div>
+            <button class="btn-secondary" style="padding: 2px 8px; font-size: 12px;" onclick="removeFromCart(${index})">刪除</button>
         </div>
-    </div>
+    `).join('');
+}
 
-    <!-- 主導覽列 Navbar -->
-    <header class="navbar">
-        <a class="brand-logo-link" onclick="navigateTo('home')" title="島花解語 FLORA: WHISPER">
-            <img src="6.png" 
-                 alt="島花解語 FLORA: WHISPER" 
-                 class="nav-brand-img"
-                 onerror="this.onerror=null; this.style.display='none'; document.getElementById('navFallbackLogo').style.display='inline-flex';">
-            <div id="navFallbackLogo" class="brand-fallback-badge">
-                <span>島花解語</span>
-                <span style="font-size: 11px; letter-spacing: 1px; vertical-align: middle;">FLORA: WHISPER</span>
-                <span style="color: #ecc94b; font-size: 14px;">🌸</span>
-            </div>
-        </a>
-        <nav class="nav-links">
-            <a onclick="navigateTo('home')" id="nav-home" class="active">首頁</a>
-            <a onclick="navigateTo('new-customer')" id="nav-new-customer">新客體驗</a>
-            <a onclick="navigateTo('promotions')" id="nav-promotions">最新優惠</a>
-            <a onclick="navigateTo('products')" id="nav-products">商品分類</a>
-            <a onclick="navigateTo('journal')" id="nav-journal">保養知識專欄</a>
-            <a onclick="navigateTo('membership')" id="nav-membership">會員回饋</a>
-            <a onclick="navigateTo('about')" id="nav-about">關於島花解語</a>
-            <a onclick="navigateTo('contact')" id="nav-contact">聯繫我們</a>
-        </nav>
-    </header>
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCartUI();
+}
 
-    <main class="main-content">
-        <!-- 分頁 1：首頁 Home -->
-        <section id="view-home" class="page-view active-view">
-            <div class="hero">
-                <h1>聆聽肌膚與自然的對話</h1>
-                <p>萃取島嶼深處純淨植物能量，拋開複雜負擔，找回最原始的透亮光采</p>
-                <button class="btn-primary" onclick="navigateTo('products')">探索保養系列</button>
-            </div>
-            <div class="container">
-                <div class="home-features">
-                    <div class="feature-card">
-                        <h3>新客專屬禮遇</h3>
-                        <p>初次探索島花解語？免費索取專屬試用組合與首購現折優惠券。</p>
-                        <button class="btn-secondary" onclick="navigateTo('new-customer')">領取體驗組</button>
-                    </div>
-                    <div class="feature-card">
-                        <h3>最新檔期優惠</h3>
-                        <p>全館滿額即享免運，換季賦活保養組合限時 85 折，呵護您的每寸肌膚。</p>
-                        <button class="btn-secondary" onclick="navigateTo('promotions')">探索優惠</button>
-                    </div>
-                    <div class="feature-card">
-                        <h3>純淨成分專欄</h3>
-                        <p>解構台灣原生花萃精華，學習科學溫和保養，綻放真實自信。</p>
-                        <button class="btn-secondary" onclick="navigateTo('journal')">閱讀專欄</button>
-                    </div>
-                </div>
-            </div>
-        </section>
+function toggleCartDrawer(open) {
+    const drawer = document.getElementById('cartDrawer');
+    const overlay = document.getElementById('cartOverlay');
+    if (open) {
+        drawer.classList.add('open');
+        overlay.style.display = 'block';
+    } else {
+        drawer.classList.remove('open');
+        overlay.style.display = 'none';
+    }
+}
 
-        <!-- 分頁 2：新客體驗 New Customer -->
-        <section id="view-new-customer" class="page-view">
-            <div class="page-header">
-                <h1>新客首購專屬禮遇</h1>
-                <p>第一次遇見島花解語，讓我們送您一份植萃禮物</p>
-            </div>
-            <div class="container">
-                <div class="coupon-box">
-                    <h2>首購現折 NT$ 100</h2>
-                    <p style="color: #666; margin-top: 6px;">結帳輸入專屬折扣碼即享首購優惠</p>
-                    <div class="coupon-code">WELCOME100</div>
-                    <button class="btn-primary" onclick="copyCouponCode('WELCOME100')">複製折扣碼</button>
-                </div>
-                <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 25px;">明星體驗推薦組</h2>
-                <div class="product-grid">
-                    <div class="product-card">
-                        <div class="product-thumb">植萃三步驟體驗組</div>
-                        <div class="product-name">植萃平衡體驗三件組</div>
-                        <div class="product-desc">含潔顏乳 30ml + 化妝水 50ml + 精華液 10ml</div>
-                        <div class="product-price">NT$ 680</div>
-                        <button class="btn-primary" onclick="addToCart('植萃平衡體驗三件組', 680)">加入購物車</button>
-                    </div>
-                    <div class="product-card">
-                        <div class="product-thumb">舒緩保濕旅行組</div>
-                        <div class="product-name">島嶼花萃修護潤澤組</div>
-                        <div class="product-desc">深層滋養敏弱肌膚，旅行外出攜帶最安心</div>
-                        <div class="product-price">NT$ 520</div>
-                        <button class="btn-primary" onclick="addToCart('島嶼花萃修護潤澤組', 520)">加入購物車</button>
-                    </div>
-                </div>
-            </div>
-        </section>
+function checkout() {
+    if (cart.length === 0) {
+        alert('您的購物車是空的，快去挑選植萃好物吧！');
+        return;
+    }
+    
+    // 計算總金額並組合購買項目
+    const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const itemsStr = cart.map(c => `${c.name} x${c.qty}`).join(', ');
+    
+    // 建立新訂單
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const newOrder = {
+        id: Date.now(),
+        orderNo: "ORD-" + now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0') + "-" + Math.floor(100 + Math.random() * 900),
+        customer: isLoggedIn ? currentUserAccount : "官網訪客 (未登入)",
+        phone: "待客戶提供",
+        items: itemsStr,
+        total: total,
+        payment: "信用卡/行動支付",
+        status: "pending",
+        tracking: "",
+        date: dateStr
+    };
 
-        <!-- 分頁 3：最新優惠 Promotions -->
-        <section id="view-promotions" class="page-view">
-            <div class="page-header">
-                <h1>本月精選活動與優惠</h1>
-                <p>為您準備的植萃護膚驚喜禮遇</p>
-            </div>
-            <div class="container">
-                <div class="promo-item">
-                    <div>
-                        <span class="promo-tag">全館特惠</span>
-                        <h2 style="color: var(--primary-color); margin-bottom: 6px;">全館滿 $1,500 即享免運</h2>
-                        <p style="color: #666;">即日起至本月底，全站下單滿額即享宅配或超商取貨免運費。</p>
-                    </div>
-                    <button class="btn-primary" onclick="navigateTo('products')">前往選購</button>
-                </div>
-                <div class="promo-item">
-                    <div>
-                        <span class="promo-tag">換季特惠</span>
-                        <h2 style="color: var(--primary-color); margin-bottom: 6px;">換季賦活保濕雙重奏 85 折</h2>
-                        <p style="color: #666;">精選野花修護精華 + 海桐花鎖水霜，維持水潤穩定屏障。</p>
-                    </div>
-                    <button class="btn-primary" onclick="addToCart('換季賦活保濕雙重奏', 2430)">搶購優惠組合</button>
-                </div>
-            </div>
-        </section>
+    // 儲存訂單到 LocalStorage，讓後台抓取
+    let savedOrders = JSON.parse(localStorage.getItem('daohua_orders')) || [];
+    savedOrders.unshift(newOrder);
+    localStorage.setItem('daohua_orders', JSON.stringify(savedOrders));
 
-        <!-- 分頁 4：商品分類 Products -->
-        <section id="view-products" class="page-view">
-            <div class="page-header">
-                <h1>全系列植萃商品</h1>
-                <p>純淨配方，溫和呵護每寸肌膚</p>
-            </div>
-            <div class="container">
-                <div class="category-tabs">
-                    <button class="cat-tab active" onclick="filterProducts('all', this)">全部商品</button>
-                    <button class="cat-tab" onclick="filterProducts('face', this)">面部保養</button>
-                    <button class="cat-tab" onclick="filterProducts('body', this)">身體護理</button>
-                    <button class="cat-tab" onclick="filterProducts('fragrance', this)">植物香氛</button>
-                </div>
+    alert(`感謝您的訂購！訂單編號 ${newOrder.orderNo} 已成立。\n主管已可於後台看見此筆訂單，我們將盡速為您出貨！`);
+    cart = [];
+    updateCartUI();
+    toggleCartDrawer(false);
+}
 
-                <div class="product-grid" id="productsContainer">
-                    <!-- 動態商品列表將由 JS 渲染 -->
-                </div>
-            </div>
-        </section>
+/* 搜尋功能 */
+function executeSearch() {
+    const query = document.getElementById('searchInput').value.trim();
+    if (!query) return;
+    navigateTo('products');
+    const results = productList.filter(p => p.name.includes(query) || p.desc.includes(query));
+    renderProducts(results);
+}
+function handleSearch(e) { if (e.key === 'Enter') executeSearch(); }
 
-        <!-- 分頁 5：知識專欄 Journal -->
-        <section id="view-journal" class="page-view">
-            <div class="page-header">
-                <h1>植萃保養日誌</h1>
-                <p>學習溫和保養科學，了解您肌膚的真正需求</p>
-            </div>
-            <div class="container">
-                <div class="article-grid">
-                    <div class="article-card">
-                        <div class="article-thumb">換季保養指南</div>
-                        <div class="article-body">
-                            <div class="article-date">2026-09-01</div>
-                            <div class="article-title">換季肌膚不聽話？三步建立植萃保護屏障</div>
-                            <div class="article-summary">面對氣溫與濕度劇烈變化，如何透過天然植萃成分讓肌膚維持水潤穩定狀態...</div>
-                            <button class="btn-secondary" onclick="alert('專欄文章完整內容載入中...')">閱讀全文 →</button>
-                        </div>
-                    </div>
-                    <div class="article-card">
-                        <div class="article-thumb">成分解析</div>
-                        <div class="article-body">
-                            <div class="article-date">2026-08-15</div>
-                            <div class="article-title">解碼成分：為什麼「天然花萃」是溫和修護的關鍵？</div>
-                            <div class="article-summary">擺脫過度清潔與化學負擔帶來的刺激，帶您深入了解島嶼植萃如何修護角質層...</div>
-                            <button class="btn-secondary" onclick="alert('專欄文章完整內容載入中...')">閱讀全文 →</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+/* 登入彈窗 */
+function openLoginModal() { document.getElementById('loginModal').style.display = 'flex'; }
+function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
+function handleLogin(e) {
+    e.preventDefault();
+    currentUserAccount = document.getElementById('loginAccount').value;
+    isLoggedIn = true;
+    document.getElementById('userStatusText').textContent = currentUserAccount.split('@')[0] + ' (已登入)';
+    closeLoginModal();
+    alert('登入成功！歡迎回到島花解語。');
+}
 
-        <!-- 分頁 6：會員回饋 Membership -->
-        <section id="view-membership" class="page-view">
-            <div class="page-header">
-                <h1>會員等級與獨享尊榮禮遇</h1>
-                <p>累積消費輕鬆晉升，享受紅利點數與專屬生日禮</p>
-            </div>
-            <div class="container">
-                <div class="tier-grid">
-                    <div class="tier-card">
-                        <div class="tier-title">綠葉會員</div>
-                        <div class="tier-sub">免費註冊即可加入</div>
-                        <ul class="tier-list">
-                            <li>消費滿 $100 累積 1 點紅利</li>
-                            <li>新客首購折價券 $100</li>
-                            <li>不定期會員電子報優惠</li>
-                        </ul>
-                    </div>
-                    <div class="tier-card">
-                        <div class="tier-title">綻放會員</div>
-                        <div class="tier-sub">年累積消費滿 $5,000</div>
-                        <ul class="tier-list">
-                            <li>全單購物享 95 折優惠</li>
-                            <li>生日當月專屬 $300 購物金</li>
-                            <li>紅利點數 1.5 倍送</li>
-                        </ul>
-                    </div>
-                    <div class="tier-card">
-                        <div class="tier-title">花語尊榮會員</div>
-                        <div class="tier-sub">年累積消費滿 $12,000</div>
-                        <ul class="tier-list">
-                            <li>全單購物享 9 折優惠</li>
-                            <li>生日當月專屬 $600 購物金</li>
-                            <li>新品上市優先免費體驗名額</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
+/* 其他小功能 */
+function copyCouponCode(code) {
+    navigator.clipboard.writeText(code).then(() => alert('折扣碼 ' + code + ' 已複製！')).catch(() => alert('折扣碼為：' + code));
+}
+function handleContactSubmit(e) {
+    e.preventDefault();
+    const name = document.getElementById('contactName').value;
+    alert(`感謝 ${name} 的留言！專員將盡速聯繫您。`);
+    e.target.reset();
+}
+function toggleAiChat() {
+    const chatWin = document.getElementById('aiChatWindow');
+    chatWin.style.display = chatWin.style.display === 'flex' ? 'none' : 'flex';
+    if (chatWin.style.display === 'flex') document.getElementById('aiInput').focus();
+}
+function handleAiEnter(e) { if (e.key === 'Enter') sendAiMessage(); }
+function sendAiMessage() {
+    const input = document.getElementById('aiInput');
+    const text = input.value.trim();
+    if (!text) return;
+    const chatBody = document.getElementById('chatBody');
+    chatBody.innerHTML += `<div class="chat-msg msg-user">${text}</div>`;
+    input.value = '';
+    chatBody.scrollTop = chatBody.scrollHeight;
+    setTimeout(() => {
+        chatBody.innerHTML += `<div class="chat-msg msg-ai">感謝提問！請撥打客服專線 0976943100 由專人協助您喔！🌸</div>`;
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }, 600);
+}
+function openLineService() { alert('即將為您導向 LINE 官方客服！'); }
 
-        <!-- 分頁 7：關於島花解語 About -->
-        <section id="view-about" class="page-view">
-            <div class="page-header">
-                <h1>關於島花解語</h1>
-                <p>來自島嶼的純淨呼喚，讓自然走入日常</p>
-            </div>
-            <div class="container about-wrap">
-                <!-- 品牌官方標誌展示徽章 (支援本地 6.png，同時提供細緻向量備援) -->
-                <div class="about-logo-badge">
-                    <img src="6.png" alt="島花解語 FLORA: WHISPER 官方標誌" class="about-logo-img" onerror="this.onerror=null; this.style.display='none'; document.getElementById('aboutFallbackLogo').style.display='flex';">
-                    <div id="aboutFallbackLogo" style="display:none; flex-direction:column; align-items:center;">
-                        <svg width="90" height="90" viewBox="0 0 100 130" fill="none">
-                            <path d="M50 120 C25 88 10 65 10 45 C10 22 28 8 50 8 C72 8 90 22 90 45 C90 65 75 88 50 120 Z" stroke="#bfa15f" stroke-width="7" />
-                        </svg>
-                        <div style="font-size: 26px; font-weight: bold; color: #bfa15f; letter-spacing: 3px; margin-top: 6px;">島花解語</div>
-                        <div style="font-size: 11px; color: #bfa15f; letter-spacing: 2px; font-weight: 600;">FLORA: WHISPER</div>
-                    </div>
-                </div>
-                <div class="about-text">
-                    <p>「島花解語」誕生於對海島自然的敬畏與熱愛。我們相信，島嶼上每一株隨風綻放的花草，都蘊含著解開肌膚健康密碼的生命能量。</p>
-                    <br>
-                    <p>在現代快節奏的城市生活中，肌膚承受著紫外線、空污與壓力的多重侵襲。我們深入台灣島嶼山林與海岸，尋覓最純粹的天然植萃原料，屏除人工香精、酒精與多餘化學負擔，以現代生物科學技術完整保留植物活性精華。</p>
-                    <br>
-                    <p>傾聽肌膚的細微聲音，讓島花為您解語。回歸純淨自然，找回屬於您的原始光采。</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- 分頁 8：聯繫我們 Contact (包含專屬聯絡人與客服專線) -->
-        <section id="view-contact" class="page-view">
-            <div class="page-header">
-                <h1>聯繫我們</h1>
-                <p>我們隨時準備好聆聽您的需求與反饋</p>
-            </div>
-            <div class="container">
-                <div class="contact-layout">
-                    <!-- 聯絡資訊欄位 -->
-                    <div class="contact-card">
-                        <h2>品牌與客服聯絡資訊</h2>
-                        <p style="margin-bottom: 22px; color: #666; font-size: 14px;">
-                            若您對商品選購、訂單進度、會員權益或商務合作有任何疑問，歡迎隨時透過下方資訊或專人客服與我們聯繫。
-                        </p>
-
-                        <div class="contact-field">
-                            <strong>客服專人聯絡資訊：</strong>
-                            <a href="tel:0976943100" class="highlight-phone">0976943100</a>
-                        </div>
-                        <div class="contact-field">
-                            <strong>聯絡人：</strong>
-                            <span>簡鈿翃</span>
-                        </div>
-                        <div class="contact-field">
-                            <strong>聯繫電話：</strong>
-                            <a href="tel:0930267812" style="color:#333;font-weight:600;">0930267812</a>
-                        </div>
-                        <div class="contact-field">
-                            <strong>客服服務時間：</strong>
-                            <span>週一至週五 09:00 - 18:00</span>
-                        </div>
-                        <div class="contact-field">
-                            <strong>電子郵件：</strong>
-                            <a href="mailto:service@daohuajieyu.com.tw" style="color:var(--primary-color);">service@daohuajieyu.com.tw</a>
-                        </div>
-                        <div class="contact-field" style="margin-top: 15px;">
-                            <strong>即時通訊服務：</strong>
-                            <span style="color: var(--line-green); font-weight: bold;">LINE 官方帳號搜尋 @daohuajieyu</span>
-                        </div>
-                    </div>
-
-                    <!-- 線上諮詢留言表單 -->
-                    <div class="contact-card">
-                        <h2>線上留言諮詢</h2>
-                        <form id="contactForm" onsubmit="handleContactSubmit(event)">
-                            <div class="form-group">
-                                <label for="contactName">您的姓名 *</label>
-                                <input type="text" id="contactName" required placeholder="請輸入您的真實姓名">
-                            </div>
-                            <div class="form-group">
-                                <label for="contactPhone">聯絡電話 *</label>
-                                <input type="tel" id="contactPhone" required placeholder="請輸入您的手機號碼">
-                            </div>
-                            <div class="form-group">
-                                <label for="contactEmail">電子郵件 *</label>
-                                <input type="email" id="contactEmail" required placeholder="example@email.com">
-                            </div>
-                            <div class="form-group">
-                                <label for="contactSubject">主旨</label>
-                                <input type="text" id="contactSubject" placeholder="如：肌膚保養諮詢 / 訂單查詢">
-                            </div>
-                            <div class="form-group">
-                                <label for="contactMessage">諮詢內容 *</label>
-                                <textarea id="contactMessage" rows="4" required placeholder="請詳細留下您的問題，專人將竭誠為您服務..."></textarea>
-                            </div>
-                            <button type="submit" class="btn-primary" style="width: 100%;">發送訊息給專人</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- 橄欖綠頁尾 (附件一完整格式) -->
-    <footer class="site-footer">
-        <div class="footer-container">
-            <div class="footer-col">
-                <a onclick="navigateTo('about')">關於品牌</a>
-                <a onclick="alert('【購物須知】\n全館商品皆提供 7 天鑑賞期，未開封享有完整退換保障。')">購物須知</a>
-                <a onclick="alert('【隱私權政策】\n我們極為重視您的個人隱私，所有資料僅供訂單處理與官方服務使用。')">隱私權政策</a>
-            </div>
-            <div class="footer-col">
-                <a onclick="navigateTo('membership')">會員制度</a>
-                <a onclick="alert('【物流配送】\n支援黑貓宅配到府、7-11 及全家超商取貨付款，出貨約 2-3 工作天。')">物流配送</a>
-                <a onclick="alert('【165反詐騙宣導】\n島花解語絕不會主動要求您操作 ATM 分期付款解除，防詐專線請撥 165。')">165反詐騙</a>
-            </div>
-            <div class="footer-col">
-                <div class="follow-title">FOLLOW US</div>
-                <div class="social-icons">
-                    <div class="social-btn" onclick="alert('前往 Facebook 粉絲專頁')">f</div>
-                    <div class="social-btn" onclick="alert('前往 Instagram 官方帳號')">📷</div>
-                    <div class="social-btn" onclick="alert('前往 LINE 官方好友')">LINE</div>
-                </div>
-                <div class="line-pay-badge">LINE Pay</div>
-            </div>
-        </div>
-        <div class="copyright">
-            ⓘ ©2026 www.daohuajieyu.com.tw 島花解語智慧電商
-        </div>
-    </footer>
-
-    <!-- 左下角 LINE Messenger 浮動按鈕 -->
-    <div class="left-floating-widget">
-        <div class="line-msg-btn" onclick="openLineService()">
-            <span>💬</span> Message us
-        </div>
-    </div>
-
-    <!-- 右下角浮動工具列 -->
-    <div class="right-floating-widget">
-        <div class="float-circle-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到頁面頂部">
-            ↑
-        </div>
-        <div class="float-circle-btn" onclick="toggleCartDrawer(true)" title="查看購物車">
-            🛒
-            <span class="float-cart-badge" id="floatCartBadge">0</span>
-        </div>
-        <div class="float-circle-btn ai-btn" onclick="toggleAiChat()" title="專屬 AI 客服">
-            💬
-        </div>
-    </div>
-
-    <!-- AI 專屬客服對話視窗 -->
-    <div class="ai-chat-window" id="aiChatWindow">
-        <div class="chat-header">
-            <span>🌸 島花 AI 專屬客服</span>
-            <span class="close-btn" onclick="toggleAiChat()">✖</span>
-        </div>
-        <div class="chat-body" id="chatBody">
-            <div class="chat-msg msg-ai">
-                您好！我是「島花解語」專屬 AI 智慧保養助理。🌸<br>
-                若有即時需求，客服專人專線為 <strong>0976943100</strong>，或聯繫負責人簡鈿翃（0930267812）。請問今天想諮詢保養還是查詢優惠呢？
-            </div>
-        </div>
-        <div class="chat-input-row">
-            <input type="text" id="aiInput" placeholder="請輸入您的問題..." onkeypress="handleAiEnter(event)">
-            <button onclick="sendAiMessage()">發送</button>
-        </div>
-    </div>
-
-    <!-- 側滑購物車抽屜與遮罩 -->
-    <div class="cart-overlay" id="cartOverlay" onclick="toggleCartDrawer(false)"></div>
-    <div class="cart-drawer" id="cartDrawer">
-        <div class="cart-header">
-            <h3 style="color: var(--primary-color);">您的購物車</h3>
-            <span class="close-btn" onclick="toggleCartDrawer(false)">✖</span>
-        </div>
-        <div class="cart-items-container" id="cartItemsContainer">
-            <p style="text-align: center; color: #999; margin-top: 40px;">購物車內目前沒有商品</p>
-        </div>
-        <div class="cart-footer">
-            <div class="cart-total-row">
-                <span>總計金額</span>
-                <span id="cartTotalPrice">NT$ 0</span>
-            </div>
-            <button class="btn-primary" style="width: 100%;" onclick="checkout()">前往結帳</button>
-        </div>
-    </div>
-
-    <!-- 登入 / 註冊彈窗 Modal -->
-    <div class="login-modal" id="loginModal">
-        <div class="login-dialog">
-            <span class="close-btn" style="position: absolute; top: 15px; right: 15px;" onclick="closeLoginModal()">✖</span>
-            <h3>會員登入</h3>
-            <form onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label>手機號碼 / 電子郵件</label>
-                    <input type="text" id="loginAccount" required placeholder="請輸入手機或信箱">
-                </div>
-                <div class="form-group">
-                    <label>會員密碼</label>
-                    <input type="password" id="loginPassword" required placeholder="請輸入密碼">
-                </div>
-                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">登入</button>
-                <button type="button" class="btn-secondary" style="width: 100%; margin-top: 10px;" onclick="alert('已模擬快速註冊成為綠葉會員！')">快速免費註冊</button>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        /* 商品資料清單 */
-        const productList = [
-            { id: 1, name: "野花修護舒緩精華", cat: "face", price: 1280, desc: "島嶼高活性花萃，改善敏感泛紅，穩定肌底屏障" },
-            { id: 2, name: "島嶼露水保濕噴霧", cat: "face", price: 880, desc: "細緻微米水分子，隨時補水保濕，調節水油平衡" },
-            { id: 3, name: "海桐花抗痕鎖水霜", cat: "face", price: 1580, desc: "深層潤澤鎖水，輕盈不油膩，撫平細紋彈潤肌膚" },
-            { id: 4, name: "木蘭潔顏胺基酸慕斯", cat: "face", price: 650, desc: "溫和弱酸性配方，洗後水嫩不緊繃，深層淨化毛孔" },
-            { id: 5, name: "島嶼森林草本沐浴露", cat: "body", price: 720, desc: "蘊含清新木質香調與草本萃取，溫和潔淨全身肌膚" },
-            { id: 6, name: "天竺葵潤膚身體乳", cat: "body", price: 920, desc: "絲滑乳液質地，迅速吸收不黏膩，長時間柔嫩保濕" },
-            { id: 7, name: "晨曦島嶼植物香氛精油", cat: "fragrance", price: 1100, desc: "高純度天然萃取，釋放身心緊繃壓力，舒緩放鬆" },
-            { id: 8, name: "月夜微風室內香氛噴霧", cat: "fragrance", price: 850, desc: "溫和天然花草氣息，打造舒適純淨的生活居家空間" }
-        ];
-
-        let cart = [];
-        let isLoggedIn = false;
-
-        /* 初始化商品清單 */
-        function renderProducts(items) {
-            const container = document.getElementById('productsContainer');
-            if (!container) return;
-            if (items.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #888; padding: 30px;">未找到相關商品</p>';
-                return;
-            }
-            container.innerHTML = items.map(p => `
-                <div class="product-card">
-                    <div class="product-thumb">${p.name}</div>
-                    <div class="product-name">${p.name}</div>
-                    <div class="product-desc">${p.desc}</div>
-                    <div class="product-price">NT$ ${p.price.toLocaleString()}</div>
-                    <button class="btn-primary" onclick="addToCart('${p.name}', ${p.price})">加入購物車</button>
-                </div>
-            `).join('');
+// 預設載入商品列表
+window.addEventListener('DOMContentLoaded', () => {
+    renderProducts(productList);
+    
+    // 監聽 LocalStorage 變化 (若同瀏覽器跨分頁更新後台，前台自動刷新)
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'daohua_products') {
+            location.reload();
         }
-
-        /* 類別篩選 */
-        function filterProducts(category, btnElement) {
-            document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
-            if (btnElement) btnElement.classList.add('active');
-            
-            if (category === 'all') {
-                renderProducts(productList);
-            } else {
-                const filtered = productList.filter(p => p.cat === category);
-                renderProducts(filtered);
-            }
-        }
-
-        /* 頁面分頁切換 */
-        function navigateTo(pageKey) {
-            document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active-view'));
-            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-
-            const targetView = document.getElementById('view-' + pageKey);
-            const targetNav = document.getElementById('nav-' + pageKey);
-
-            if (targetView) targetView.classList.add('active-view');
-            if (targetNav) targetNav.classList.add('active');
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        /* 購物車功能 */
-        function addToCart(title, price) {
-            const existing = cart.find(item => item.name === title);
-            if (existing) {
-                existing.qty += 1;
-            } else {
-                cart.push({ name: title, price: price, qty: 1 });
-            }
-            updateCartUI();
-            toggleCartDrawer(true);
-        }
-
-        function updateCartUI() {
-            const count = cart.reduce((sum, item) => sum + item.qty, 0);
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-
-            document.getElementById('topCartBadge').textContent = count;
-            document.getElementById('floatCartBadge').textContent = count;
-            document.getElementById('cartTotalPrice').textContent = 'NT$ ' + total.toLocaleString();
-
-            const container = document.getElementById('cartItemsContainer');
-            if (cart.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #999; margin-top: 40px;">購物車內目前沒有商品</p>';
-                return;
-            }
-
-            container.innerHTML = cart.map((item, index) => `
-                <div class="cart-item-row">
-                    <div>
-                        <div style="font-weight: 600; font-size: 14px;">${item.name}</div>
-                        <div style="color: var(--primary-color); font-size: 13px;">NT$ ${item.price.toLocaleString()} x ${item.qty}</div>
-                    </div>
-                    <button class="btn-secondary" style="padding: 2px 8px; font-size: 12px;" onclick="removeFromCart(${index})">刪除</button>
-                </div>
-            `).join('');
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
-
-        function toggleCartDrawer(open) {
-            const drawer = document.getElementById('cartDrawer');
-            const overlay = document.getElementById('cartOverlay');
-            if (open) {
-                drawer.classList.add('open');
-                overlay.style.display = 'block';
-            } else {
-                drawer.classList.remove('open');
-                overlay.style.display = 'none';
-            }
-        }
-
-        function checkout() {
-            if (cart.length === 0) {
-                alert('您的購物車是空的，快去挑選植萃好物吧！');
-                return;
-            }
-            alert('感謝您的訂購！系統已為您確認訂單，後續將有專人 簡鈿翃 為您安排出貨。客服諮詢專線：0976943100');
-            cart = [];
-            updateCartUI();
-            toggleCartDrawer(false);
-        }
-
-        /* 搜尋功能 */
-        function executeSearch() {
-            const query = document.getElementById('searchInput').value.trim();
-            if (!query) return;
-            navigateTo('products');
-            const results = productList.filter(p => p.name.includes(query) || p.desc.includes(query));
-            renderProducts(results);
-        }
-
-        function handleSearch(e) {
-            if (e.key === 'Enter') executeSearch();
-        }
-
-        /* 登入彈窗 */
-        function openLoginModal() {
-            document.getElementById('loginModal').style.display = 'flex';
-        }
-
-        function closeLoginModal() {
-            document.getElementById('loginModal').style.display = 'none';
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const account = document.getElementById('loginAccount').value;
-            isLoggedIn = true;
-            document.getElementById('userStatusText').textContent = account + ' (已登入)';
-            closeLoginModal();
-            alert('登入成功！歡迎回到島花解語。');
-        }
-
-        /* 複製折扣碼 */
-        function copyCouponCode(code) {
-            navigator.clipboard.writeText(code).then(() => {
-                alert('折扣碼 ' + code + ' 已複製到剪貼簿！');
-            }).catch(() => {
-                alert('折扣碼為：' + code);
-            });
-        }
-
-        /* 聯絡表單送出 */
-        function handleContactSubmit(e) {
-            e.preventDefault();
-            const name = document.getElementById('contactName').value;
-            alert(`感謝 ${name} 的留言！專員「簡鈿翃」與客服團隊將盡速透過電話或信件聯繫您。\n如有急迫事宜，亦可直接撥打客服專線：0976943100。`);
-            e.target.reset();
-        }
-
-        /* AI 智慧客服對話功能 */
-        function toggleAiChat() {
-            const chatWin = document.getElementById('aiChatWindow');
-            chatWin.style.display = chatWin.style.display === 'flex' ? 'none' : 'flex';
-            if (chatWin.style.display === 'flex') {
-                document.getElementById('aiInput').focus();
-            }
-        }
-
-        function handleAiEnter(e) {
-            if (e.key === 'Enter') sendAiMessage();
-        }
-
-        function sendAiMessage() {
-            const input = document.getElementById('aiInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            const chatBody = document.getElementById('chatBody');
-
-            // 建立使用者訊息氣泡
-            const userBubble = document.createElement('div');
-            userBubble.className = 'chat-msg msg-user';
-            userBubble.textContent = text;
-            chatBody.appendChild(userBubble);
-            input.value = '';
-            chatBody.scrollTop = chatBody.scrollHeight;
-
-            // 模擬智慧回覆邏輯
-            setTimeout(() => {
-                const aiBubble = document.createElement('div');
-                aiBubble.className = 'chat-msg msg-ai';
-
-                let reply = "感謝您的提問！若想體驗明星商品，推薦領取新客禮「WELCOME100」。如需專人詳盡協助，歡迎隨時撥打客服專人電話：0976943100，或聯繫負責人簡鈿翃（0930267812）！";
-
-                if (text.includes("電話") || text.includes("客服") || text.includes("專人") || text.includes("聯絡")) {
-                    reply = "客服專人聯絡資訊為：0976943100；負責專員為 簡鈿翃（0930267812），服務時間週一至週五 09:00 - 18:00，竭誠為您服務！";
-                } else if (text.includes("運費") || text.includes("優惠") || text.includes("折扣")) {
-                    reply = "目前全館滿 NT$ 1,500 即享免運！新朋友結帳輸入 WELCOME100 還能現折 100 元喔！";
-                } else if (text.includes("乾") || text.includes("敏感") || text.includes("推薦") || text.includes("油")) {
-                    reply = "敏弱與乾燥肌膚極力推薦「野花修護舒緩精華」與「海桐花抗痕鎖水霜」，能迅速修護屏障、鎖水保濕！";
-                }
-
-                aiBubble.innerHTML = reply;
-                chatBody.appendChild(aiBubble);
-                chatBody.scrollTop = chatBody.scrollHeight;
-            }, 600);
-        }
-
-        function openLineService() {
-            alert('即將為您導向 LINE 官方客服！\n您也可以直接聯繫客服專人電話：0976943100。');
-        }
-
-        // 預設載入商品列表
-        window.addEventListener('DOMContentLoaded', () => {
-            renderProducts(productList);
-        });
-    </script>
-</body>
-</html>
+    });
+});
